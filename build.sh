@@ -6,4 +6,4 @@ mv *.o build/
 
 g++ build/*.o -lsfml-system -lsfml-window -lsfml-graphics -o ./bin/game
 
-./bin/game
+./bin/game.app
