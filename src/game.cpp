@@ -60,7 +60,7 @@ void Game::update()
 	}
 
 	this->updatePlayer();
-	this->updateView();
+	/* this->updateView(); */
 	this->updateColision();
 }
 

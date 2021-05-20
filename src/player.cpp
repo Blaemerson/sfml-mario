@@ -34,7 +34,10 @@ void Player::move(const float dir_x, const float dir_y)
 	// limit velocity
 	if (std::abs(this->velocity.x) > this->velocityMax)
 	{
-		this->velocity.x = this->velocityMax * ((this->velocity.x < 0.f) ? -1.f : 1.f);
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::RShift) and this->velocity.y == 0.f and (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) or sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)))
+			this->velocity.x = this->velocityMax * ((this->velocity.x < 0.f) ? -2.f : 2.f);
+		else
+			this->velocity.x = this->velocityMax * ((this->velocity.x < 0.f) ? -1.f : 1.f);
 	}
 }
 
@@ -98,7 +101,7 @@ void Player::updateAnimations()
 		this->currentFrame.left = 0;
 		this->sprite.setTextureRect(this->currentFrame);
 	}
-	else if (this->animState == MOVING_RIGHT || this->velocity.x > 0.65f)
+	else if (this->animState == MOVING_RIGHT || this->velocity.x > 0.6f)
 	{
 		if (this->animTimer.getElapsedTime().asSeconds() >= anim_speed or getAnimSwitch())
 		{
@@ -117,7 +120,7 @@ void Player::updateAnimations()
 		this->sprite.setScale(3.f, 3.f);
 		this->sprite.setOrigin(0.f, 0.f);
 	}
-	else if (this->animState == MOVING_LEFT || this->velocity.x < -0.65f)
+	else if (this->animState == MOVING_LEFT || this->velocity.x < -0.6f)
 	{
 		if (this->animTimer.getElapsedTime().asSeconds() >= this->anim_speed or getAnimSwitch())
 		{
@@ -212,11 +215,11 @@ void Player::initAnimations()
 void Player::initPhysics()
 {
 	this->velocityMax = 3.0f;
-	this->velocityMin = 0.05f;
-	this->acceleration = 0.35;
+	this->velocityMin = 0.f;
+	this->acceleration = 0.25f;
 	this->drag = 0.97f;
 	this->gravity = 1.0f;
-	this->velocityMaxY = 3.0f;
+	this->velocityMaxY = 7.0f;
 }
 
 const bool& Player::getAnimSwitch()
