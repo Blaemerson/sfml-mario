@@ -194,7 +194,7 @@ void Player::initTexture()
 {
 	if (!this->textureSheet.loadFromFile("textures/mario.png"))
 	{
-		std::cout << "ERROR in Player: texturesheet failed to load" << std::endl;
+		std::cout << "ERROR in Player.initTexture(): texturesheet failed to load" << std::endl;
 	}
 }
 
