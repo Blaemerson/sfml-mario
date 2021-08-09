@@ -22,6 +22,7 @@ public:
   void resetAnimTimer();
   void move(const float dir_x, const float dir_y);
   void update();
+  void animate();
   void render(sf::RenderTarget& target);
   void updateMovement();
   void updateAnimations();
@@ -64,4 +65,3 @@ private:
   void initAnimations();
   void initPhysics();
 };
-

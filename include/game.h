@@ -23,14 +23,19 @@ public:
   void updateColision();
   void renderPlayer();
   void renderMap();
+
+  sf::Time getElapsed();
+  void restartClock();
 private:
   // Variables / window
   sf::RenderWindow window;
   sf::VideoMode video_mode;
   sf::Event event;
   sf::View view;
+
   float dt = 0.f;
   sf::Clock dt_clock;
+  sf::Time elapsed;
 
   // Game objects
   Player* player;

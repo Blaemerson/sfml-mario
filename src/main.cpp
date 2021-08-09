@@ -3,7 +3,7 @@
 
 int main(int argc, char** argv)
 {
-  srand(static_cast<unsigned>(time(0)));
+  // srand(static_cast<unsigned>(time(0)));
 
   // Init game engine
   Game game;
@@ -13,6 +13,7 @@ int main(int argc, char** argv)
   {
     game.update();
     game.render();
+    game.restartClock();
   }
 
   // End

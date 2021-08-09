@@ -6,13 +6,13 @@ Game::Game()
   this->initWindow();
   this->initView();
   this->initPlayer();
-  this->initMap();
+  // this->initMap();
 }
 
 Game::~Game()
 {
   delete this->player;
-  delete this->tilemap;
+  // delete this->tilemap;
 }
 
 void Game::initView()
@@ -60,13 +60,23 @@ void Game::update()
   }
 
   this->updatePlayer();
-  /* this->updateView(); */
+  // this->updateView();
   this->updateColision();
+}
+
+void Game::restartClock()
+{
+  this->elapsed = dt_clock.restart();
+}
+
+sf::Time Game::getElapsed()
+{
+  return this->elapsed;
 }
 
 void Game::render()
 {
-  this->window.clear();
+  this->window.clear(sf::Color::Cyan);
 
   this->window.setView(this->view);
 
@@ -93,8 +103,8 @@ void Game::updateColision()
 {
   if (this->player->getPosition().y + this->player->getGlobalBounds().height > this->window.getSize().y)
   {
-          this->player->resetVelocityY();
-          this->player->setPosition(this->player->getPosition().x, this->window.getSize().y - this->player->getGlobalBounds().height);
+    this->player->resetVelocityY();
+    this->player->setPosition(this->player->getPosition().x, this->window.getSize().y - this->player->getGlobalBounds().height);
   }
 }
 
