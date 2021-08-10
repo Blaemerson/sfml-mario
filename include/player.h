@@ -31,35 +31,33 @@ public:
   void collide();
 
 private:
-  sf::Sprite sprite;
-  sf::Texture textureSheet;
+  sf::Sprite m_sprite;
+  sf::Texture m_tex_sheet;
 
   // Anim
-  short animState;
-  sf::IntRect currentFrame;
-  sf::Clock animTimer;
-  bool animSwitch;
-  float anim_speed;
+  short m_anim_state;
+  sf::IntRect m_curr_frame;
+  sf::Clock m_anim_timer;
+  bool m_anim_switch;
+  float m_anim_speed;
 
-  float space_held = 0.f;
 
   // Physics
-  sf::Vector2f velocity;
-  float velocityMax;
-  float velocityMin;
-  float acceleration;
-  float drag;
-  float gravity;
-  float velocityMaxY;
+  sf::Vector2f m_velocity;
+  float m_velocity_max;
+  float m_velocity_min;
+  float m_acceleration;
+  float m_drag;
+  float m_gravity;
+  float m_velocityMaxY;
 
-  bool isAirborne;
+  bool m_is_airborne;
 
   // Move
 
 
   // Core
 
-  void initVars();
   void initTexture();
   void initSprite();
   void initAnimations();

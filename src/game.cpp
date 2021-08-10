@@ -123,7 +123,7 @@ void Game::renderMap()
 void Game::initWindow()
 {
   this->window.create(sf::VideoMode(1200, 800), "MyGame", sf::Style::Close | sf::Style::Titlebar);
-  this->window.setFramerateLimit(120);
+  this->window.setFramerateLimit(60);
   this->window.setKeyRepeatEnabled(false);
 }
 

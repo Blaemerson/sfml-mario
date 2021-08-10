@@ -4,263 +4,265 @@
 
 Player::Player()
 {
-  this->initTexture();
-  this->initSprite();
-  this->initVars();
-  this->initAnimations();
-  this->initPhysics();
+  initTexture();
+  initSprite();
+  initAnimations();
+  initPhysics();
 }
 
 Player::~Player()
 {
 }
 
+void Player::update()
+{
+  updateMovement();
+  updateAnimations();
+  updatePhysics();
+}
+
+/*************************************/
+/*             RENDERING             */
+/*************************************/
+void Player::render(sf::RenderTarget& target)
+{
+  target.draw(m_sprite);
+}
+
+void Player::initTexture()
+{
+  if (!m_tex_sheet.loadFromFile("textures/mario.png"))
+  {
+    std::cout << "ERROR in Player.initTexture(): m_tex_sheet failed to load" << std::endl;
+  }
+}
+void Player::initSprite()
+{
+  m_sprite.setTexture(m_tex_sheet);
+  m_curr_frame = sf::IntRect(0, 0, 16, 16);
+  m_sprite.setTextureRect(m_curr_frame);
+  m_sprite.setScale(3.0f, 3.0f);
+}
+
+/*************************************/
+/*              PHYSICS              */
+/*************************************/
+void Player::initPhysics()
+{
+  m_velocity_max = 4.2f;
+  m_velocity_min = 0.f;
+  m_acceleration = 0.40f;
+  m_drag = 0.94f;
+  m_gravity = 3.2f;
+  m_velocityMaxY = 22.0f;
+}
+
+void Player::updatePhysics()
+{
+  // if jumping && not falling && spacebar is held: jump higher and stay in air longer
+  m_anim_state == JUMPING && m_velocity.y <= 0.f && sf::Keyboard::isKeyPressed(sf::Keyboard::Space) ?
+    m_velocity.y += (0.1f * m_gravity) * (1.5f * m_acceleration) : m_velocity.y += m_gravity * m_acceleration;
+
+  // limit y velocity
+  if (std::abs(m_velocity.y) > m_velocityMaxY)
+  {
+    m_velocity.y = m_velocityMaxY * ((m_velocity.y < 0.f) ? -1.f : 1.f);
+  }
+
+  // decelerate
+  m_velocity *= m_drag;
+
+  // limit deceleration
+  if (std::abs(m_velocity.x) < m_velocity_min)
+  {
+    m_velocity.x = 0.f;
+  }
+  if (std::abs(m_velocity.y) < m_velocity_min)
+  {
+    m_velocity.y = 0.f;
+  }
+
+  m_sprite.move(m_velocity);
+}
+
 void Player::collide()
 {
 }
 
-void Player::resetAnimTimer()
-{
-  this->animTimer.restart();
-  this->animSwitch = true;
-}
-
+/*************************************/
+/*              MOVEMENT             */
+/*************************************/
 void Player::move(const float dir_x, const float dir_y)
 {
-  // acceleration
-  this->velocity.x += dir_x * this->acceleration;
-  this->velocity.y += dir_y * this->acceleration;
+  // m_acceleration
+  m_velocity.x += dir_x * m_acceleration;
+  m_velocity.y += dir_y * m_acceleration * m_gravity;
 
   // limit velocity
-  if (std::abs(this->velocity.x) > this->velocityMax)
+  if (std::abs(m_velocity.x) > m_velocity_max)
   {
-    this->velocity.x = this->velocityMax * ((this->velocity.x < 0.f) ? -1.f : 1.f);
+    m_velocity.x = m_velocity_max * ((m_velocity.x < 0.f) ? -1.f : 1.f);
   }
-}
-
-const sf::Vector2f Player::getPosition() const
-{
-  return this->sprite.getPosition();
-}
-
-void Player::update()
-{
-  this->updateMovement();
-  this->updateAnimations();
-  this->updatePhysics();
 }
 
 void Player::jump()
 {
-  if (!this->isAirborne)
+  if (!m_is_airborne)
   {
-    this->isAirborne = true;
-    this->animState = JUMPING;
-    this->velocity.y = -sqrt(2.0f) * this->gravity * 10.f;
+    m_is_airborne = true;
+    m_anim_state = JUMPING;
+    m_velocity.y = -sqrt(2.0f) * m_gravity * 10.f;
   }
 }
 
 void Player::updateMovement()
 {
-  if (this->velocity.y == 0.f)
+  if (m_velocity.y == 0.f)
   {
-    this->isAirborne = false;
-    if (std::abs(this->velocity.x) < 0.45f || this->animState == JUMPING) 
+    m_is_airborne = false;
+    if (std::abs(m_velocity.x) < 0.45f || m_anim_state == JUMPING) 
     {
-      this->animState = IDLE;
+      m_anim_state = IDLE;
     }
   }
   else 
   {
-    this->isAirborne = true;
+    m_is_airborne = true;
   }
 
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
   {
-    this->isAirborne ? this->move(-0.3f, 0.f) : this->move(-1.f, 0.f);
-    if (this->animState != JUMPING || !this->isAirborne)
+    // If jumping to the left, slow down speed to the right
+    m_is_airborne && m_velocity.x > 0.f ? move(-0.2f, 0.f) : move(-1.f, 0.f);
+    if (m_anim_state != JUMPING || !m_is_airborne)
     {
-      this->animState = MOVING_LEFT;
+      m_anim_state = MOVING_LEFT;
     }
   }
   else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
   {
-    this->isAirborne ? this->move(0.3f, 0.f) : this->move(1.f, 0.f);
-    if (this->animState != JUMPING || !this->isAirborne)
+    // If jumping to the right, slow down speed to the left
+    m_is_airborne && m_velocity.x < 0.f ? move(0.2f, 0.f) : move(1.f, 0.f);
+    if (m_anim_state != JUMPING || !m_is_airborne)
     {
-      this->animState = MOVING_RIGHT;
+      m_anim_state = MOVING_RIGHT;
     }
   }
 }
 
-sf::Vector2f Player::getVelocity()
+/*************************************/
+/*             ANIMATION             */
+/*************************************/
+void Player::initAnimations()
 {
-  return this->velocity;
+  m_anim_state = IDLE;
+  m_anim_speed = 0.22f;
+  m_anim_timer.restart();
+  m_anim_switch = true;
 }
 
 void Player::animate()
 {
-  if (this->animTimer.getElapsedTime().asSeconds() >= this->anim_speed || getAnimSwitch())
+  if (m_anim_timer.getElapsedTime().asSeconds() >= m_anim_speed || getAnimSwitch())
   {
-    this->currentFrame.left += 16.f;
-    if (this->currentFrame.left >= 32.f)
+    m_curr_frame.left += 16.f;
+    if (m_curr_frame.left >= 32.f)
     {
-      this->currentFrame.left = 0;
+      m_curr_frame.left = 0;
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
     {
-      anim_speed -= 0.01f / std::abs(1.f/this->velocity.x);
+      m_anim_speed -= 0.01f * std::abs(m_velocity.x);
     }
     else
     {
-      anim_speed += 0.01f / std::abs(1.f/this->velocity.x);
+      m_anim_speed += 0.01f * std::abs(m_velocity.x);
     }
-    if (anim_speed < 0.10f) 
+    if (m_anim_speed < 0.10f) 
     {
-      anim_speed = 0.1f;
+      m_anim_speed = 0.1f;
     }
-    // this->animTimer.restart();
-    this->resetAnimTimer();
-    this->sprite.setTextureRect(this->currentFrame);
+    // m_anim_timer.restart();
+    resetAnimTimer();
+    m_sprite.setTextureRect(m_curr_frame);
   }
 }
 
 void Player::updateAnimations()
 {
-  if (this->animState == IDLE)
+  if (m_anim_state == IDLE)
   {
-    this->anim_speed = 0.22f;
-    this->currentFrame.left = 0;
-    this->sprite.setTextureRect(this->currentFrame);
+    m_anim_speed = 0.22f;
+    m_curr_frame.left = 0;
+    m_sprite.setTextureRect(m_curr_frame);
   }
-  else if (this->animState == MOVING_RIGHT)// || this->velocity.x > 0.6f)
+  else if (m_anim_state == MOVING_RIGHT)// || m_velocity.x > 0.6f)
   {
-    this->animate();
-    // Turn
-    if (this->animState != JUMPING)
+    animate();
+    // turn sprite
+    if (m_anim_state != JUMPING)
     {
-      this->sprite.setScale(3.f, 3.f);
-      this->sprite.setOrigin(0.f, 0.f);
+      m_sprite.setScale(3.f, 3.f);
+      m_sprite.setOrigin(0.f, 0.f);
     }
   }
-  else if (this->animState == MOVING_LEFT)// || this->velocity.x < -0.6f)
+  else if (m_anim_state == MOVING_LEFT)// || m_velocity.x < -0.6f)
   {
-    this->animate();
-    // Turn
-    if (this->animState != JUMPING)
+    animate();
+    // turn sprite
+    if (m_anim_state != JUMPING)
     {
-      this->sprite.setScale(-3.f, 3.f);
-      this->sprite.setOrigin(this->sprite.getGlobalBounds().width / 3.f, 0.f);
+      m_sprite.setScale(-3.f, 3.f);
+      m_sprite.setOrigin(m_sprite.getGlobalBounds().width / 3.f, 0.f);
     }
   }
-  if (this->animState == JUMPING)
+  else if (m_anim_state == JUMPING)
   {
-    this->currentFrame.left = 32.f;
-    this->sprite.setTextureRect(this->currentFrame);
+    m_curr_frame.left = 32.f;
+    m_sprite.setTextureRect(m_curr_frame);
   }
-}
-
-void Player::updatePhysics()
-{
-  // gravity
-  this->velocity.y += 0.25f * this->gravity;
-  if (std::abs(this->velocity.y) > this->velocityMaxY)
-  {
-    this->velocity.y = this->velocityMaxY * ((this->velocity.y < 0.f) ? -1.f : 1.f);
-  }
-
-  // decel
-  this->velocity *= this->drag;
-
-  // limit decel
-  if (std::abs(this->velocity.x) < this->velocityMin)
-  {
-    this->velocity.x = 0.f;
-  }
-  if (std::abs(this->velocity.y) < this->velocityMin)
-  {
-    this->velocity.y = 0.f;
-  }
-
-  this->sprite.move(this->velocity);
-}
-
-void Player::render(sf::RenderTarget& target)
-{
-  target.draw(this->sprite);
-
-  /* sf::CircleShape circle;
-  circle.setFillColor(sf::Color::Red);
-  circle.setRadius(3.f);
-  circle.setPosition(this->sprite.getPosition()); */
-
-  /* target.draw(circle); */
-}
-
-void Player::initVars()
-{
-  this->animState = IDLE;
-  this->anim_speed = 0.22f;
-}
-
-void Player::initTexture()
-{
-  if (!this->textureSheet.loadFromFile("textures/mario.png"))
-  {
-    std::cout << "ERROR in Player.initTexture(): texturesheet failed to load" << std::endl;
-  }
-}
-
-void Player::initSprite()
-{
-  this->sprite.setTexture(this->textureSheet);
-  this->currentFrame = sf::IntRect(0, 0, 16, 16);
-  this->sprite.setTextureRect(this->currentFrame);
-  this->sprite.setScale(3.0f, 3.0f);
-}
-
-void Player::initAnimations()
-{
-  this->animTimer.restart();
-  this->animSwitch = true;
-}
-
-void Player::initPhysics()
-{
-  this->velocityMax = 3.0f;
-  this->velocityMin = 0.f;
-  this->acceleration = 0.40f;
-  this->drag = 0.97f;
-  this->gravity = 1.0f;
-  this->velocityMaxY = 17.0f;
 }
 
 const bool& Player::getAnimSwitch()
 {
-  bool anim_switch = this->animSwitch;
-
-  if (this->animSwitch)
+  if (m_anim_switch)
   {
-    this->animSwitch = false;
+    m_anim_switch = false;
   }
+  return m_anim_switch;
+}
 
-  return this->animSwitch;
+void Player::resetAnimTimer()
+{
+  m_anim_timer.restart();
+  m_anim_switch = true;
+}
+
+/*************************************/
+/*         GETTERS / SETTERS         */
+/*************************************/
+const sf::Vector2f Player::getPosition() const
+{
+  return m_sprite.getPosition();
+}
+void Player::setPosition(const float x, const float y)
+{
+  m_sprite.setPosition(x, y);
+  m_velocity.y = 0.f;
+}
+
+sf::Vector2f Player::getVelocity()
+{
+  return m_velocity;
 }
 
 const sf::FloatRect Player::getGlobalBounds() const
 {
-  return this->sprite.getGlobalBounds();
-}
-
-//Modifiers
-void Player::setPosition(const float x, const float y)
-{
-  this->sprite.setPosition(x, y);
-  this->velocity.y = 0.f;
+  return m_sprite.getGlobalBounds();
 }
 
 void Player::resetVelocityY()
 {
-  this->velocity.y = 0.f;
+  m_velocity.y = 0.f;
 }
