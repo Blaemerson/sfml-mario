@@ -1,19 +1,14 @@
 #pragma once
-#include "tile.h"
+#include "stdafx.h"
 
-class TileMap
+class TileMap : public sf::Drawable, public sf::Transformable
 {
-private:
-  std::vector<std::vector<Tile*>> tiles;
-
 public:
-  TileMap();
-  ~TileMap();
 
-  void addTile(unsigned x, unsigned y);
-  void removeTile(unsigned x, unsigned y);
+    bool load(const std::string& tileset, sf::Vector2u tile_size, const int* tiles, unsigned int width, unsigned int height);
+    virtual void draw(sf::RenderTarget& target) const;
+private:
 
-  void update();
-  void render(sf::RenderTarget& target);
+    sf::VertexArray m_vertices;
+    sf::Texture m_tileset;
 };
-

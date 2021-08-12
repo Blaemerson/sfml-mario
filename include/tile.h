@@ -3,12 +3,6 @@
 
 class Tile
 {
-private:
-  sf::Sprite sprite;
-  const bool damaging;
-  sf::IntRect current_tile;
-  sf::Texture texture_sheet;
-
 public:
   Tile(sf::Texture& texture_sheet, sf::IntRect texture_rect, bool damaging = false);
   void initSprite();
@@ -17,5 +11,12 @@ public:
   const sf::FloatRect getGlobalBounds() const;
   void update();
   void render(sf::RenderTarget& target);
+
+private:
+  sf::Sprite sprite;
+  const bool solid;
+  sf::IntRect current_tile;
+  sf::Texture texture_sheet;
+
 };
 

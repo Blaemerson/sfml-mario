@@ -34,8 +34,8 @@ private:
   sf::View view;
 
   float dt = 0.f;
-  sf::Clock dt_clock;
-  sf::Time elapsed;
+  sf::Clock m_clock;
+  sf::Time m_elapsed;
 
   // Game objects
   Player* player;

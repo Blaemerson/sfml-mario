@@ -49,7 +49,8 @@ void Player::initSprite()
 /*************************************/
 void Player::initPhysics()
 {
-  m_velocity_max = 4.2f;
+  m_is_airborne = true;
+  m_velocity_max = 4.5f;
   m_velocity_min = 0.f;
   m_acceleration = 0.40f;
   m_drag = 0.94f;

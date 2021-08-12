@@ -29,7 +29,6 @@ const sf::RenderWindow& Game::getWindow() const
 	/* bool space_held = false; */
 void Game::update()
 {
-  dt = dt_clock.restart().asSeconds();
   while (this->window.pollEvent(this->event))
   {
     switch (this->event.type)
@@ -45,7 +44,7 @@ void Game::update()
         else if (this->event.key.code == sf::Keyboard::Space)
         {
           this->player->jump();
-          std::cout << this->player->getPosition().x << std::endl;
+          // std::cout << this->player->getPosition().x << std::endl;
         }
         break;
       case sf::Event::KeyReleased:
@@ -64,14 +63,18 @@ void Game::update()
   this->updateColision();
 }
 
+/*************************************/
+/*               TIME                */
+/*************************************/
+
 void Game::restartClock()
 {
-  this->elapsed = dt_clock.restart();
+  this->m_elapsed += m_clock.restart();
 }
 
 sf::Time Game::getElapsed()
 {
-  return this->elapsed;
+  return this->m_elapsed;
 }
 
 void Game::render()
@@ -96,15 +99,15 @@ void Game::updatePlayer()
 
 void Game::updateView()
 {
-  this->view.setCenter(this->player->getPosition().x+8, this->window.getSize().y/2.f);
+  this->view.setCenter(this->player->getPosition().x+32, this->window.getSize().y/2.f);
 }
 
 void Game::updateColision()
 {
-  if (this->player->getPosition().y + this->player->getGlobalBounds().height > this->window.getSize().y)
+  if (this->player->getPosition().y + this->player->getGlobalBounds().height > this->window.getSize().y - 32)
   {
     this->player->resetVelocityY();
-    this->player->setPosition(this->player->getPosition().x, this->window.getSize().y - this->player->getGlobalBounds().height);
+    this->player->setPosition(this->player->getPosition().x, this->window.getSize().y - this->player->getGlobalBounds().height - 32);
   }
 }
 
@@ -116,7 +119,7 @@ void Game::renderPlayer()
 
 void Game::renderMap()
 {
-  this->tilemap->render(this->window);
+  // this->tilemap->render(this->window);
 }
 
 
@@ -125,6 +128,7 @@ void Game::initWindow()
   this->window.create(sf::VideoMode(1200, 800), "MyGame", sf::Style::Close | sf::Style::Titlebar);
   this->window.setFramerateLimit(60);
   this->window.setKeyRepeatEnabled(false);
+
 }
 
 void Game::initPlayer()
@@ -134,5 +138,5 @@ void Game::initPlayer()
 
 void Game::initMap()
 {
-  this->tilemap = new TileMap();
+  // this->tilemap = new TileMap();
 }
