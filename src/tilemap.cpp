@@ -1,12 +1,26 @@
 #include "../include/tilemap.h"
 
-bool TileMap::load(const std::string& tileset, sf::Vector2u tile_size, const int* tiles, unsigned int width, unsigned int height)
-{
+TileMap::TileMap(const std::string& tilesheet, const int &tiles) {
+  initTexture(tilesheet);
+  this->tiles = &tiles;
+}
+
+bool TileMap::initTexture(const std::string& path) {
   // load the tileset texture
-  if (!m_tileset.loadFromFile(tileset))
+  if (!m_tileset.loadFromFile(path))
   {
     return false;
   }
+  return true;
+}
+
+bool TileMap::load(sf::Vector2u tile_size, unsigned int width, unsigned int height)
+{
+  // load the tileset texture
+  // if (!m_tileset.loadFromFile(tileset))
+  // {
+  //   return false;
+  // }
 
   // resize the vertex array to fit the level size
   m_vertices.setPrimitiveType(sf::Quads);
@@ -18,7 +32,11 @@ bool TileMap::load(const std::string& tileset, sf::Vector2u tile_size, const int
     for (unsigned int j = 0; j < height; ++j)
     {
       // get the current tile number
-      int tile_num = tiles[i + j * width];
+      int tile_num = this->tiles[i + j * width];
+      if (tile_num == 0) {
+        // don't draw empty tiles
+        continue;
+      }
 
       // find its position in the tileset texture
       int tu = tile_num % (m_tileset.getSize().x / tile_size.x);
@@ -41,17 +59,26 @@ bool TileMap::load(const std::string& tileset, sf::Vector2u tile_size, const int
     }
   }
 
+    std::cout << "done drawing" << std::endl;
   return true;
 }
 
-void TileMap::draw(sf::RenderTarget& target) const
+const int TileMap::getTile(int pos) {
+  int num = this->tiles[pos];
+  return num;
+}
+
+void TileMap::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
   // apply the transform
-  // states.transform *= getTransform();
+  states.transform = getTransform();
+  states.transform.translate(0, target.getSize().y);
+  states.transform.scale(1.5, -1.5);
+
 
   // apply the tileset texture
-  // states.texture = &m_tileset;
+  states.texture = &m_tileset;
 
   // draw the vertex array
-  target.draw(m_vertices);
+  target.draw(m_vertices, states);
 }

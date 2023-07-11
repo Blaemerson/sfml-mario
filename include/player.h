@@ -12,12 +12,14 @@ public:
   //Accessors
   const bool& getAnimSwitch();
   const sf::Vector2f getPosition() const;
+  const sf::Vector2i getCoords() const;
   sf::Vector2f getVelocity();
   const sf::FloatRect getGlobalBounds() const;
 
   //Modifiers
   void setPosition(const float x, const float y);
   void resetVelocityY();
+  void resetVelocityX();
 
   void resetAnimTimer();
   void move(const float dir_x, const float dir_y);

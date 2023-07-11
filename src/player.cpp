@@ -58,6 +58,8 @@ void Player::initPhysics()
   m_velocityMaxY = 22.0f;
 }
 
+
+
 void Player::updatePhysics()
 {
   // if jumping && not falling && spacebar is held: jump higher and stay in air longer
@@ -121,12 +123,12 @@ void Player::updateMovement()
   if (m_velocity.y == 0.f)
   {
     m_is_airborne = false;
-    if (std::abs(m_velocity.x) < 0.45f || m_anim_state == JUMPING) 
+    if (std::abs(m_velocity.x) < 0.45f || m_anim_state == JUMPING)
     {
       m_anim_state = IDLE;
     }
   }
-  else 
+  else
   {
     m_is_airborne = true;
   }
@@ -180,7 +182,7 @@ void Player::animate()
     {
       m_anim_speed += 0.01f * std::abs(m_velocity.x);
     }
-    if (m_anim_speed < 0.10f) 
+    if (m_anim_speed < 0.10f)
     {
       m_anim_speed = 0.1f;
     }
@@ -243,6 +245,7 @@ void Player::resetAnimTimer()
 /*************************************/
 /*         GETTERS / SETTERS         */
 /*************************************/
+
 const sf::Vector2f Player::getPosition() const
 {
   return m_sprite.getPosition();
@@ -251,6 +254,10 @@ void Player::setPosition(const float x, const float y)
 {
   m_sprite.setPosition(x, y);
   m_velocity.y = 0.f;
+}
+
+const sf::Vector2i Player::getCoords() const {
+  return sf::Vector2i(std::round(getPosition().x / 48), std::round((getPosition().y + 48) / 48));
 }
 
 sf::Vector2f Player::getVelocity()
@@ -266,4 +273,9 @@ const sf::FloatRect Player::getGlobalBounds() const
 void Player::resetVelocityY()
 {
   m_velocity.y = 0.f;
+}
+
+void Player::resetVelocityX()
+{
+  m_velocity.x = 0.f;
 }

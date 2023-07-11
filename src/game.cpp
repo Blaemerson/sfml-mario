@@ -3,54 +3,62 @@
 
 Game::Game()
 {
-  this->initWindow();
-  this->initView();
-  this->initPlayer();
-  // this->initMap();
+  initWindow();
+  initView();
+  initPlayer();
+  initMap();
 }
 
 Game::~Game()
 {
-  delete this->player;
-  // delete this->tilemap;
+  delete player;
+  delete tilemap;
 }
 
 void Game::initView()
 {
-  this->view.setSize(this->window.getSize().x, this->window.getSize().y);
-  this->view.setCenter(this->window.getSize().x/2.f, this->window.getSize().y/2.f);
+  view.setSize(window.getSize().x, window.getSize().y);
+  view.setCenter(window.getSize().x/2.f, window.getSize().y/2.f);
 }
 // Accessors
 const sf::RenderWindow& Game::getWindow() const
 {
-  return this->window;
+  return window;
 }
+
+static const int tiles[] = {
+      0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+      0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
 
 	/* bool space_held = false; */
 void Game::update()
 {
-  while (this->window.pollEvent(this->event))
+  while (window.pollEvent(event))
   {
-    switch (this->event.type)
+    switch (event.type)
     {
       case sf::Event::Closed:
-        this->window.close();
+        window.close();
         break;
       case sf::Event::KeyPressed:
-        if (this->event.key.code == sf::Keyboard::Q)
+        if (event.key.code == sf::Keyboard::Q)
         {
-          this->window.close();
+          window.close();
         }
-        else if (this->event.key.code == sf::Keyboard::Space)
+        else if (event.key.code == sf::Keyboard::Space)
         {
-          this->player->jump();
-          // std::cout << this->player->getPosition().x << std::endl;
+          player->jump();
+          // std::cout << player->getPosition().x << std::endl;
         }
         break;
       case sf::Event::KeyReleased:
-        if (this->event.key.code == sf::Keyboard::A || this->event.key.code == sf::Keyboard::D)
+        if (event.key.code == sf::Keyboard::A || event.key.code == sf::Keyboard::D)
         {
-          this->player->resetAnimTimer();
+          player->resetAnimTimer();
         }
         break;
       default:
@@ -58,9 +66,9 @@ void Game::update()
     }
   }
 
-  this->updatePlayer();
-  // this->updateView();
-  this->updateColision();
+  updatePlayer();
+  updateView();
+  updateColision();
 }
 
 /*************************************/
@@ -69,74 +77,91 @@ void Game::update()
 
 void Game::restartClock()
 {
-  this->m_elapsed += m_clock.restart();
+  m_elapsed += m_clock.restart();
 }
 
 sf::Time Game::getElapsed()
 {
-  return this->m_elapsed;
+  return m_elapsed;
 }
 
 void Game::render()
 {
-  this->window.clear(sf::Color::Cyan);
 
-  this->window.setView(this->view);
+  window.clear(sf::Color::Cyan);
+
+  window.setView(view);
 
   // Draw game objects
-  this->renderPlayer();
-  this->renderMap();
+  renderPlayer();
+  renderMap();
 
-  this->window.setView(this->window.getDefaultView());
+  window.setView(window.getDefaultView());
 
-  this->window.display();
+  window.display();
 }
 
 void Game::updatePlayer()
 {
-  this->player->update();
+  player->update();
 }
 
 void Game::updateView()
 {
-  this->view.setCenter(this->player->getPosition().x+32, this->window.getSize().y/2.f);
+  view.setCenter(player->getPosition().x+(48 * 5), window.getSize().y/2.f);
 }
 
 void Game::updateColision()
 {
-  if (this->player->getPosition().y + this->player->getGlobalBounds().height > this->window.getSize().y - 32)
+  if (player->getPosition().y + player->getGlobalBounds().height > window.getSize().y)
   {
-    this->player->resetVelocityY();
-    this->player->setPosition(this->player->getPosition().x, this->window.getSize().y - this->player->getGlobalBounds().height - 32);
+    player->resetVelocityY();
+    player->setPosition(player->getPosition().x, window.getSize().y - player->getGlobalBounds().height);
+    return;
+  }
+  sf::Vector2i player_coords = player->getCoords();
+  const unsigned int tileSize = player->getGlobalBounds().height;
+  int index = (player_coords.x + (32 * ((window.getSize().y / tileSize) - player_coords.y)));
+  // std::cout << player_coords.y << std::endl;
+  if (index < 32 * 5 && tiles[index] == 1 ) {
+    std::cout << index << std::endl;
+    player->resetVelocityY();
+    player->setPosition(player->getPosition().x, window.getSize().y - tileSize - (tileSize * ((window.getSize().y / tileSize) - (player_coords.y - 1))));
   }
 }
 
 
 void Game::renderPlayer()
 {
-  this->player->render(this->window);
+  player->render(window);
 }
 
 void Game::renderMap()
 {
-  // this->tilemap->render(this->window);
+  sf::RenderStates states;
+  tilemap->draw(window, states);
 }
 
 
 void Game::initWindow()
 {
-  this->window.create(sf::VideoMode(1200, 800), "MyGame", sf::Style::Close | sf::Style::Titlebar);
-  this->window.setFramerateLimit(60);
-  this->window.setKeyRepeatEnabled(false);
+  window.create(sf::VideoMode(1200, 16 * 50), "MyGame", sf::Style::Close | sf::Style::Titlebar);
+  window.setFramerateLimit(60);
+  window.setKeyRepeatEnabled(false);
 
 }
 
 void Game::initPlayer()
 {
-  this->player = new Player();
+  player = new Player();
 }
 
 void Game::initMap()
 {
-  // this->tilemap = new TileMap();
+
+  tilemap = new TileMap("textures/tilesheet.png", *tiles);
+  if (!tilemap->load(sf::Vector2u(32, 32), 32, 5)) {
+        std::cout << "notloaded tilesheet" << std::endl;
+        return;
+    }
 }

@@ -10,7 +10,7 @@ INCLUDE = -I/include
 COMPILER_FLAGS = -Wall
 
 #LINKER_FLAGS specifies the libraries we're linking against
-LINKER_FLAGS = -lsfml-system -lsfml-window -lsfml-graphics -lsfml-audio
+LINKER_FLAGS = -lsfml-system -lsfml-window -lsfml-graphics
 
 #OBJ_NAME specifies the name of our exectuable
 OBJ_NAME = game
