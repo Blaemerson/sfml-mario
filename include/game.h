@@ -33,7 +33,7 @@ private:
   sf::Event event;
   sf::View view;
 
-  float dt = 0.f;
+  float dt = 0.01f;
   sf::Clock m_clock;
   sf::Time m_elapsed;
 

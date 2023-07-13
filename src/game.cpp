@@ -1,5 +1,6 @@
 #include "../include/stdafx.h"
 #include "../include/game.h"
+#include "../include/levels.h"
 
 Game::Game()
 {
@@ -25,14 +26,6 @@ const sf::RenderWindow& Game::getWindow() const
 {
   return window;
 }
-
-static const int tiles[] = {
-      0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-      0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-};
 
 	/* bool space_held = false; */
 void Game::update()
@@ -108,7 +101,15 @@ void Game::updatePlayer()
 
 void Game::updateView()
 {
-  view.setCenter(player->getPosition().x+(48 * 5), window.getSize().y/2.f);
+  std::cout << player->getPosition().x << std::endl;
+  if (player->getPosition().x > (48 * 13) && player->getPosition().x < (48 * LEVEL_1_WIDTH) - (48 * 27)) {
+    view.setCenter(player->getPosition().x+(48 * 7), window.getSize().y/2.f);
+  } else if (player->getPosition().x > (48 * LEVEL_1_WIDTH) - (48 * 27)) {
+    view.setCenter(48 * 76, window.getSize().y/2.f);
+  }
+  else {
+    view.setCenter(48 * 20, window.getSize().y/2.f);
+  }
 }
 
 void Game::updateColision()
@@ -121,9 +122,9 @@ void Game::updateColision()
   }
   sf::Vector2i player_coords = player->getCoords();
   const unsigned int tileSize = player->getGlobalBounds().height;
-  int index = (player_coords.x + (32 * ((window.getSize().y / tileSize) - player_coords.y)));
+  int index = (player_coords.x + (LEVEL_1_WIDTH * ((window.getSize().y / tileSize) - player_coords.y)));
   // std::cout << player_coords.y << std::endl;
-  if (index < 32 * 5 && tiles[index] == 1 ) {
+  if (LEVEL_1[index] == 1 ) {
     std::cout << index << std::endl;
     player->resetVelocityY();
     player->setPosition(player->getPosition().x, window.getSize().y - tileSize - (tileSize * ((window.getSize().y / tileSize) - (player_coords.y - 1))));
@@ -159,8 +160,8 @@ void Game::initPlayer()
 void Game::initMap()
 {
 
-  tilemap = new TileMap("textures/tilesheet.png", *tiles);
-  if (!tilemap->load(sf::Vector2u(32, 32), 32, 5)) {
+  tilemap = new TileMap("textures/tilesheet.png", *LEVEL_1);
+  if (!tilemap->load(sf::Vector2u(32, 32), LEVEL_1_WIDTH, 8)) {
         std::cout << "notloaded tilesheet" << std::endl;
         return;
     }
