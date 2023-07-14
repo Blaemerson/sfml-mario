@@ -174,7 +174,7 @@ void Player::animate()
       m_curr_frame.left = 0;
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+    if ((sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::D)))
     {
       m_anim_speed -= 0.01f * std::abs(m_velocity.x);
     }
@@ -257,7 +257,7 @@ void Player::setPosition(const float x, const float y)
 }
 
 const sf::Vector2i Player::getCoords() const {
-  return sf::Vector2i(std::round(getPosition().x / 48), std::round((getPosition().y + 48) / 48));
+  return sf::Vector2i(std::round((getPosition().x / 48)), std::round(((getPosition().y) / 48) + 0.5));
 }
 
 sf::Vector2f Player::getVelocity()

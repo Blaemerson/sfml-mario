@@ -86,8 +86,8 @@ void Game::render()
   window.setView(view);
 
   // Draw game objects
-  renderPlayer();
   renderMap();
+  renderPlayer();
 
   window.setView(window.getDefaultView());
 
@@ -101,14 +101,14 @@ void Game::updatePlayer()
 
 void Game::updateView()
 {
-  std::cout << player->getPosition().x << std::endl;
-  if (player->getPosition().x > (48 * 13) && player->getPosition().x < (48 * LEVEL_1_WIDTH) - (48 * 27)) {
-    view.setCenter(player->getPosition().x+(48 * 7), window.getSize().y/2.f);
-  } else if (player->getPosition().x > (48 * LEVEL_1_WIDTH) - (48 * 27)) {
-    view.setCenter(48 * 76, window.getSize().y/2.f);
-  }
-  else {
-    view.setCenter(48 * 20, window.getSize().y/2.f);
+  // std::cout << player->getPosition().x << std::endl;
+    // view.setCenter(player->getPosition().x+(48 * 7), window.getSize().y/2.f);
+  if (player->getPosition().x < (48 * 5)) {
+    view.setCenter((48 * 12.5), (window.getSize().y / 48) + 256);
+  } else if (player->getPosition().x > (48 * 76)) {
+    view.setCenter((48 * 83.5), (window.getSize().y / 48) + 256);
+  } else {
+    view.setCenter(player->getPosition().x+(48 * 7.5), (window.getSize().y / 48) + 256);
   }
 }
 
@@ -120,15 +120,45 @@ void Game::updateColision()
     player->setPosition(player->getPosition().x, window.getSize().y - player->getGlobalBounds().height);
     return;
   }
+
   sf::Vector2i player_coords = player->getCoords();
-  const unsigned int tileSize = player->getGlobalBounds().height;
-  int index = (player_coords.x + (LEVEL_1_WIDTH * ((window.getSize().y / tileSize) - player_coords.y)));
-  // std::cout << player_coords.y << std::endl;
-  if (LEVEL_1[index] == 1 ) {
-    std::cout << index << std::endl;
+  int index = player_coords.x + (LEVEL_1_WIDTH) * (player_coords.y);
+  int indexRight = (player_coords.x + 1) + (LEVEL_1_WIDTH) * (player_coords.y - 1);
+  int indexLeft = (player_coords.x - 1) + (LEVEL_1_WIDTH) * (player_coords.y - 1);
+
+  if (LEVEL_1[index] == 1 )
+  {
     player->resetVelocityY();
-    player->setPosition(player->getPosition().x, window.getSize().y - tileSize - (tileSize * ((window.getSize().y / tileSize) - (player_coords.y - 1))));
+    player->setPosition(player->getPosition().x, tilemap->getTile(index).getPosition().y - player->getGlobalBounds().height);
   }
+  if (LEVEL_1[indexRight] == 1 && player->getVelocity().x > 0.f && ((tilemap->getTile(indexRight).getPosition().x - player->getGlobalBounds().width) - player->getPosition().x) < 0.0)
+  {
+    player->resetVelocityX();
+    player->setPosition(tilemap->getTile(indexRight).getPosition().x - player->getGlobalBounds().width, player->getPosition().y);
+  }
+  else if (LEVEL_1[indexLeft] == 1 && player->getVelocity().x < 0.f && (player->getPosition().x - (tilemap->getTile(indexLeft).getPosition().x + player->getGlobalBounds().width)) < 0.0 )
+  {
+    player->resetVelocityX();
+    player->setPosition(tilemap->getTile(indexLeft).getPosition().x + player->getGlobalBounds().width, player->getPosition().y);
+  }
+
+
+    // for (int i = 0; i < 8; i++) {
+    //   for (int j = 0; j < LEVEL_1_WIDTH; j++) {
+    //     if (j + (LEVEL_1_WIDTH * i) == index || j + (LEVEL_1_WIDTH * i) == indexRight || j + (LEVEL_1_WIDTH * i) == indexLeft) {
+    //       std::cout << "M";
+    //     }
+    //     else {
+    //       std::cout << LEVEL_1[j + (LEVEL_1_WIDTH * i)];
+    //     }
+    //   }
+    //   std::cout << std::endl;
+    // }
+    //
+    // std::cout << "player x = " << player_coords.x << " y = " << player_coords.y << std::endl;
+    // std::cout << "Player pos y = " << player->getPosition().y << std::endl;
+    // std::cout << "Standing on tile pos y = " << tilemap->getTile(index).getPosition().y << std::endl;
+    // std::cout << "Standing on tile pos x = " << tilemap->getTile(index).getPosition().x << std::endl;
 }
 
 
@@ -160,8 +190,8 @@ void Game::initPlayer()
 void Game::initMap()
 {
 
-  tilemap = new TileMap("textures/tilesheet.png", *LEVEL_1);
-  if (!tilemap->load(sf::Vector2u(32, 32), LEVEL_1_WIDTH, 8)) {
+  tilemap = new TileMap("textures/tilesheet.png", *LEVEL_1, LEVEL_1_WIDTH, LEVEL_1_HEIGHT);
+  if (!tilemap->load(sf::Vector2u(32, 32))) {
         std::cout << "notloaded tilesheet" << std::endl;
         return;
     }

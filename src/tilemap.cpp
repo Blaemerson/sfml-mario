@@ -1,7 +1,9 @@
 #include "../include/tilemap.h"
 
-TileMap::TileMap(const std::string& tilesheet, const int &tiles) {
+TileMap::TileMap(const std::string& tilesheet, const int &tiles, const unsigned int width, const unsigned int height) {
   initTexture(tilesheet);
+  this->height = height;
+  this->width = width;
   this->tiles = &tiles;
 }
 
@@ -14,7 +16,7 @@ bool TileMap::initTexture(const std::string& path) {
   return true;
 }
 
-bool TileMap::load(sf::Vector2u tile_size, unsigned int width, unsigned int height)
+bool TileMap::load(sf::Vector2u tile_size)
 {
   // load the tileset texture
   // if (!m_tileset.loadFromFile(tileset))
@@ -59,21 +61,21 @@ bool TileMap::load(sf::Vector2u tile_size, unsigned int width, unsigned int heig
     }
   }
 
-    std::cout << "done drawing" << std::endl;
+  std::cout << "done drawing" << std::endl;
   return true;
 }
 
-const int TileMap::getTile(int pos) {
-  int num = this->tiles[pos];
-  return num;
+const sf::FloatRect TileMap::getTile(int pos) {
+  sf::Vertex* quad = &m_vertices[(pos) * 4];
+  return sf::FloatRect(quad[0].position.x * 1.5, quad[0].position.y * 1.5, 32, 32);
 }
 
 void TileMap::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
   // apply the transform
   states.transform = getTransform();
-  states.transform.translate(0, target.getSize().y);
-  states.transform.scale(1.5, -1.5);
+  // states.transform.translate(0, target.getSize().y - (48 * 8));
+  states.transform.scale(1.5, 1.5);
 
 
   // apply the tileset texture
