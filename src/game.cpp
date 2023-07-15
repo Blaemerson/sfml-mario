@@ -53,6 +53,10 @@ void Game::update()
         {
           player->resetAnimTimer();
         }
+        if (event.key.code == sf::Keyboard::N) {
+          delete player;
+          initPlayer();
+        }
         break;
       default:
         break;
@@ -101,14 +105,20 @@ void Game::updatePlayer()
 
 void Game::updateView()
 {
+  const float diff = 2.5;
+  const unsigned int centerOffset = 48 * (diff * 3);
+  const unsigned int scrollBegin = 48 * (diff * 2);
+  const unsigned int levelEdgeLeft = 48 * (diff * 5);
+  const unsigned int scrollEnd = 48 * (LEVEL_1_WIDTH - (diff * 8));
+  const unsigned int levelEdgeRight = 48 * (LEVEL_1_WIDTH - (diff * 5));
   // std::cout << player->getPosition().x << std::endl;
     // view.setCenter(player->getPosition().x+(48 * 7), window.getSize().y/2.f);
-  if (player->getPosition().x < (48 * 5)) {
-    view.setCenter((48 * 12.5), (window.getSize().y / 48) + 256);
-  } else if (player->getPosition().x > (48 * 76)) {
-    view.setCenter((48 * 83.5), (window.getSize().y / 48) + 256);
+  if (player->getPosition().x < scrollBegin) {
+    view.setCenter(levelEdgeLeft, (LEVEL_1_HEIGHT * 48) / 3.25);
+  } else if (player->getPosition().x > scrollEnd) {
+    view.setCenter(levelEdgeRight, (LEVEL_1_HEIGHT * 48) / 3.25);
   } else {
-    view.setCenter(player->getPosition().x+(48 * 7.5), (window.getSize().y / 48) + 256);
+    view.setCenter(player->getPosition().x+centerOffset, (LEVEL_1_HEIGHT * 48) / 3.25);
   }
 }
 
@@ -125,13 +135,18 @@ void Game::updateColision()
   int index = player_coords.x + (LEVEL_1_WIDTH) * (player_coords.y);
   int indexRight = (player_coords.x + 1) + (LEVEL_1_WIDTH) * (player_coords.y - 1);
   int indexLeft = (player_coords.x - 1) + (LEVEL_1_WIDTH) * (player_coords.y - 1);
+  int indexUp = (player_coords.x) + (LEVEL_1_WIDTH) * (player_coords.y - 2);
 
   if (LEVEL_1[index] == 1 )
   {
     player->resetVelocityY();
     player->setPosition(player->getPosition().x, tilemap->getTile(index).getPosition().y - player->getGlobalBounds().height);
   }
-  if (LEVEL_1[indexRight] == 1 && player->getVelocity().x > 0.f && ((tilemap->getTile(indexRight).getPosition().x - player->getGlobalBounds().width) - player->getPosition().x) < 0.0)
+  else if (LEVEL_1[indexUp] == 1 && player->getVelocity().y < 0.f) {
+    player->resetVelocityY();
+    player->setPosition(player->getPosition().x, tilemap->getTile(indexUp).getPosition().y + player->getGlobalBounds().height);
+  }
+  if (LEVEL_1[indexRight] == 1 &&  player->getVelocity().x > 0.f && ((tilemap->getTile(indexRight).getPosition().x - player->getGlobalBounds().width) - player->getPosition().x) < 0.0)
   {
     player->resetVelocityX();
     player->setPosition(tilemap->getTile(indexRight).getPosition().x - player->getGlobalBounds().width, player->getPosition().y);
@@ -143,22 +158,22 @@ void Game::updateColision()
   }
 
 
-    // for (int i = 0; i < 8; i++) {
-    //   for (int j = 0; j < LEVEL_1_WIDTH; j++) {
-    //     if (j + (LEVEL_1_WIDTH * i) == index || j + (LEVEL_1_WIDTH * i) == indexRight || j + (LEVEL_1_WIDTH * i) == indexLeft) {
-    //       std::cout << "M";
-    //     }
-    //     else {
-    //       std::cout << LEVEL_1[j + (LEVEL_1_WIDTH * i)];
-    //     }
-    //   }
-    //   std::cout << std::endl;
-    // }
-    //
-    // std::cout << "player x = " << player_coords.x << " y = " << player_coords.y << std::endl;
-    // std::cout << "Player pos y = " << player->getPosition().y << std::endl;
-    // std::cout << "Standing on tile pos y = " << tilemap->getTile(index).getPosition().y << std::endl;
-    // std::cout << "Standing on tile pos x = " << tilemap->getTile(index).getPosition().x << std::endl;
+    for (int i = 0; i < LEVEL_1_HEIGHT; i++) {
+      for (int j = 0; j < LEVEL_1_WIDTH; j++) {
+        int idx = j + (LEVEL_1_WIDTH * i);
+        if (idx == indexLeft + 1) {
+          std::cout << "M";
+        }
+        else {
+          std::cout << LEVEL_1[j + (LEVEL_1_WIDTH * i)];
+        }
+      }
+      std::cout << std::endl;
+    }
+
+    std::cout << "Player x = " << player_coords.x << " y = " << player_coords.y << std::endl;
+    std::cout << "Player vel x = " << player->getVelocity().x << std::endl;
+    std::cout << "Player vel y = " << player->getVelocity().y << std::endl;
 }
 
 
@@ -190,8 +205,8 @@ void Game::initPlayer()
 void Game::initMap()
 {
 
-  tilemap = new TileMap("textures/tilesheet.png", *LEVEL_1, LEVEL_1_WIDTH, LEVEL_1_HEIGHT);
-  if (!tilemap->load(sf::Vector2u(32, 32))) {
+  tilemap = new TileMap("textures/tilesheet.png", *LEVEL_1, LEVEL_1_WIDTH, LEVEL_1_HEIGHT, 16);
+  if (!tilemap->load()) {
         std::cout << "notloaded tilesheet" << std::endl;
         return;
     }

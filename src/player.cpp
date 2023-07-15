@@ -4,6 +4,7 @@
 
 Player::Player()
 {
+  facing = RIGHT;
   initTexture();
   initSprite();
   initAnimations();
@@ -51,7 +52,7 @@ void Player::initPhysics()
 {
   m_is_airborne = true;
   m_velocity_max = 4.5f;
-  m_velocity_min = 0.f;
+  m_velocity_min = 0.1f;
   m_acceleration = 0.40f;
   m_drag = 0.94f;
   m_gravity = 3.2f;
@@ -80,7 +81,7 @@ void Player::updatePhysics()
   {
     m_velocity.x = 0.f;
   }
-  if (std::abs(m_velocity.y) < m_velocity_min)
+  if (std::abs(m_velocity.y) < 0.0)
   {
     m_velocity.y = 0.f;
   }
@@ -92,11 +93,16 @@ void Player::collide()
 {
 }
 
+const Direction Player::getFacing() const {
+  return facing;
+}
+
 /*************************************/
 /*              MOVEMENT             */
 /*************************************/
 void Player::move(const float dir_x, const float dir_y)
 {
+  facing = dir_x > 0 ? RIGHT : LEFT;
   // m_acceleration
   m_velocity.x += dir_x * m_acceleration;
   m_velocity.y += dir_y * m_acceleration * m_gravity;

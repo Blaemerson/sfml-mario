@@ -2,6 +2,7 @@
 #include "../include/stdafx.h"
 
 enum PLAYER_ANIMATION_STATES {IDLE = 0, MOVING_LEFT = 1, MOVING_RIGHT = 2, JUMPING = 3};
+typedef enum PLAYER_DIRECTION {LEFT, RIGHT} Direction;
 
 class Player
 {
@@ -15,6 +16,7 @@ public:
   const sf::Vector2i getCoords() const;
   sf::Vector2f getVelocity();
   const sf::FloatRect getGlobalBounds() const;
+  const Direction getFacing() const;
 
   //Modifiers
   void setPosition(const float x, const float y);
@@ -43,6 +45,7 @@ private:
   bool m_anim_switch;
   float m_anim_speed;
 
+  Direction facing;
 
   // Physics
   sf::Vector2f m_velocity;
