@@ -134,6 +134,7 @@ void Game::updateColision()
   int index_right = (player_coords.x + 1) + (LEVEL_1_WIDTH) * (player_coords.y - 1);
   int index_left = (player_coords.x - 1) + (LEVEL_1_WIDTH) * (player_coords.y - 1);
   int index_up = (player_coords.x) + (LEVEL_1_WIDTH) * (player_coords.y - 2);
+  int index_player = (player_coords.x) + (LEVEL_1_WIDTH) * (player_coords.y - 1);
 
   if (LEVEL_1[index_down] == 1 )
   {
@@ -149,6 +150,13 @@ void Game::updateColision()
       player->setPosition(player->getPosition().x, tile_up.getPosition().y + player->getGlobalBounds().height);
       player->collide();
     }
+  }
+  if (LEVEL_1[index_player] == 1) {
+    std::cout << "clipped" << std::endl;
+    const sf::FloatRect tile_player = tilemap->getTile(index_player);
+    player->resetVelocityY();
+    player->setPosition(player->getPosition().x, tile_player.getPosition().y + (tile_player.getPosition().y > player->getPosition().y - 16 ? -48 : +48));
+    player->collide();
   }
   if (LEVEL_1[index_right] == 1)
   {
@@ -216,7 +224,6 @@ void Game::initPlayer()
 
 void Game::initMap()
 {
-
   tilemap = new TileMap("textures/tilesheet.png", *LEVEL_1, LEVEL_1_WIDTH, LEVEL_1_HEIGHT, 16);
   if (!tilemap->load()) {
         std::cout << "notloaded tilesheet" << std::endl;

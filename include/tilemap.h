@@ -13,8 +13,8 @@ private:
 
     unsigned int height;
     unsigned int width;
-    unsigned int tileSize;
-    sf::VertexArray m_vertices;
+    unsigned int tile_size;
+    sf::VertexArray vertices;
     const int* tiles;
-    sf::Texture m_tileset;
+    sf::Texture tileset;
 };

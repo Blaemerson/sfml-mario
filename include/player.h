@@ -35,28 +35,28 @@ public:
   void collide();
 
 private:
-  sf::Sprite m_sprite;
-  sf::Texture m_tex_sheet;
+  sf::Sprite sprite;
+  sf::Texture tex_sheet;
 
   // Anim
-  short m_anim_state;
-  sf::IntRect m_curr_frame;
-  sf::Clock m_anim_timer;
-  bool m_anim_switch;
-  float m_anim_speed;
+  short anim_state;
+  sf::IntRect curr_frame;
+  sf::Clock anim_timer;
+  bool anim_switch;
+  float anim_speed;
 
   Direction facing;
 
   // Physics
-  sf::Vector2f m_velocity;
-  float m_velocity_max;
-  float m_velocity_min;
-  float m_acceleration;
-  float m_drag;
-  float m_gravity;
-  float m_velocityMaxY;
+  sf::Vector2f velocity;
+  float velocity_max;
+  float velocity_min;
+  float acceleration;
+  float drag;
+  float gravity;
+  float velocityMaxY;
 
-  bool m_is_airborne;
+  bool is_airborne;
 
   // Move
 
