@@ -24,13 +24,13 @@ public:
   void resetVelocityX();
 
   void resetAnimTimer();
-  void move(const float dir_x, const float dir_y);
-  void update();
-  void animate();
-  void render(sf::RenderTarget& target);
-  void updateMovement();
+  void move(sf::Vector2f movement, sf::Time deltaTime);
+  void update(sf::Time deltaTime);
+  void updateMovement(sf::Time deltaTime);
   void updateAnimations();
   void updatePhysics();
+  void animate();
+  void render(sf::RenderTarget& target);
   void jump();
   void collide();
 

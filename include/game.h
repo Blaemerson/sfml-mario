@@ -16,16 +16,15 @@ public:
   const sf::RenderWindow& getWindow() const;
 
   // Methods
-  void update();
+  void update(sf::Time delta_time);
+  void processEvents();
   void render();
-  void updatePlayer();
   void updateView();
   void updateColision();
   void renderPlayer();
   void renderMap();
 
-  sf::Time getElapsed();
-  void restartClock();
+  sf::Time restartClock();
 private:
   // Variables / window
   sf::RenderWindow window;
@@ -33,9 +32,7 @@ private:
   sf::Event event;
   sf::View view;
 
-  float dt = 0.01f;
-  sf::Clock m_clock;
-  sf::Time m_elapsed;
+  sf::Clock clock;
 
   // Game objects
   Player* player;

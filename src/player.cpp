@@ -15,9 +15,9 @@ Player::~Player()
 {
 }
 
-void Player::update()
+void Player::update(sf::Time deltaTime)
 {
-  updateMovement();
+  updateMovement(deltaTime);
   updateAnimations();
   updatePhysics();
 }
@@ -53,10 +53,10 @@ void Player::initPhysics()
   m_is_airborne = true;
   m_velocity_max = 4.5f;
   m_velocity_min = 0.1f;
-  m_acceleration = 0.40f;
-  m_drag = 0.94f;
-  m_gravity = 3.2f;
-  m_velocityMaxY = 22.0f;
+  m_acceleration = 0.80f;
+  m_drag = 0.95f;
+  m_gravity = 1.6f;
+  m_velocityMaxY = 18.0f;
 }
 
 
@@ -91,6 +91,7 @@ void Player::updatePhysics()
 
 void Player::collide()
 {
+  m_anim_state = JUMPING;
 }
 
 const Direction Player::getFacing() const {
@@ -100,12 +101,12 @@ const Direction Player::getFacing() const {
 /*************************************/
 /*              MOVEMENT             */
 /*************************************/
-void Player::move(const float dir_x, const float dir_y)
+void Player::move(sf::Vector2f movement, sf::Time deltaTime)
 {
-  facing = dir_x > 0 ? RIGHT : LEFT;
+  facing = movement.x > 0 ? RIGHT : LEFT;
   // m_acceleration
-  m_velocity.x += dir_x * m_acceleration;
-  m_velocity.y += dir_y * m_acceleration * m_gravity;
+  m_velocity.x += movement.x * m_acceleration * deltaTime.asSeconds();
+  m_velocity.y += movement.y * m_acceleration * m_gravity * deltaTime.asSeconds();
 
   // limit velocity
   if (std::abs(m_velocity.x) > m_velocity_max)
@@ -124,8 +125,10 @@ void Player::jump()
   }
 }
 
-void Player::updateMovement()
+void Player::updateMovement(sf::Time deltaTime)
 {
+  sf::Vector2f movement(0.f, 0.f);
+  // TODO: this makes player enter idle at apex of jump, since vel is 0. not desired
   if (m_velocity.y == 0.f)
   {
     m_is_airborne = false;
@@ -142,8 +145,8 @@ void Player::updateMovement()
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
   {
     // If jumping to the left, slow down speed to the right
-    m_is_airborne && m_velocity.x > 0.f ? move(-0.2f, 0.f) : move(-1.f, 0.f);
-    if (m_anim_state != JUMPING || !m_is_airborne)
+    movement.x = m_is_airborne && m_velocity.x > 0.f ? -8.0f : -40.f;
+    if (m_anim_state != JUMPING && !m_is_airborne)
     {
       m_anim_state = MOVING_LEFT;
     }
@@ -151,12 +154,13 @@ void Player::updateMovement()
   else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
   {
     // If jumping to the right, slow down speed to the left
-    m_is_airborne && m_velocity.x < 0.f ? move(0.2f, 0.f) : move(1.f, 0.f);
-    if (m_anim_state != JUMPING || !m_is_airborne)
+    movement.x = m_is_airborne && m_velocity.x < 0.f ? 8.0f : 40.f;
+    if (m_anim_state != JUMPING && !m_is_airborne)
     {
       m_anim_state = MOVING_RIGHT;
     }
   }
+  move(movement, deltaTime);
 }
 
 /*************************************/
@@ -259,12 +263,13 @@ const sf::Vector2f Player::getPosition() const
 void Player::setPosition(const float x, const float y)
 {
   m_sprite.setPosition(x, y);
-  m_velocity.y = 0.f;
+  // m_velocity.y = 0.f;
 }
 
 const sf::Vector2i Player::getCoords() const {
   return sf::Vector2i(std::round((getPosition().x / 48)), std::round(((getPosition().y) / 48) + 0.5));
 }
+
 
 sf::Vector2f Player::getVelocity()
 {
