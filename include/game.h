@@ -24,6 +24,8 @@ public:
   void renderPlayer();
   void renderMap();
 
+  void debugPrint(int player_index);
+
   sf::Time restartClock();
 private:
   // Variables / window

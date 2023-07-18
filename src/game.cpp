@@ -1,6 +1,9 @@
 #include "../include/stdafx.h"
 #include "../include/game.h"
 #include "../include/levels.h"
+#include <iostream>
+
+#define DEBUG 1
 
 Game::Game()
 {
@@ -129,6 +132,7 @@ void Game::updateColision()
     return;
   }
 
+
   sf::Vector2i player_coords = player->getCoords();
   int index_down = player_coords.x + (LEVEL_1_WIDTH) * (player_coords.y);
   int index_right = (player_coords.x + 1) + (LEVEL_1_WIDTH) * (player_coords.y - 1);
@@ -136,64 +140,72 @@ void Game::updateColision()
   int index_up = (player_coords.x) + (LEVEL_1_WIDTH) * (player_coords.y - 2);
   int index_player = (player_coords.x) + (LEVEL_1_WIDTH) * (player_coords.y - 1);
 
-  if (LEVEL_1[index_down] == 1 )
-  {
+  // sf::FloatRect p = player->getGlobalBounds();
+  if (LEVEL_1[index_down] == 1 || LEVEL_1[index_down - 1] == 1 || LEVEL_1[index_down + 1]) {
     const sf::FloatRect tile_down = tilemap->getTile(index_down);
-    player->resetVelocityY();
-    player->setPosition(player->getPosition().x, tile_down.getPosition().y - player->getGlobalBounds().height);
+    if (tile_down.intersects(player->getGlobalBounds())) {
+      player->resetVelocityY();
+      player->setPosition(player->getPosition().x, tile_down.top - 48);
+    }
   }
   if (LEVEL_1[index_up] == 1) {
-    const sf::FloatRect tile_up = tilemap->getTile(index_up);
-    // std::cout << "diff     = " << player->getPosition().y - (tile_up.getPosition().y + 48) << std::endl;
-    if (player->getVelocity().y < 0.f && (player->getPosition().y - (tile_up.getPosition().y + 48)) < 10.0) {
-      player->resetVelocityY();
-      player->setPosition(player->getPosition().x, tile_up.getPosition().y + player->getGlobalBounds().height);
-      player->collide();
+    if (player->getVelocity().y < 0.f) {
+      const sf::FloatRect tile_up = tilemap->getTile(index_up);
+      if (tile_up.intersects(player->getGlobalBounds())) {
+        player->setPosition(player->getPosition().x, tile_up.top + 48);
+        player->resetVelocityY();
+        player->collide();
+      }
     }
   }
   if (LEVEL_1[index_player] == 1) {
-    std::cout << "clipped" << std::endl;
     const sf::FloatRect tile_player = tilemap->getTile(index_player);
-    player->resetVelocityY();
-    player->setPosition(player->getPosition().x, tile_player.getPosition().y + (tile_player.getPosition().y > player->getPosition().y - 16 ? -48 : +48));
-    player->collide();
-  }
-  if (LEVEL_1[index_right] == 1)
-  {
-    const sf::FloatRect tile_right = tilemap->getTile(index_right);
-    if (((tile_right.getPosition().x - player->getGlobalBounds().width) - player->getPosition().x) < 0.0) {
-      player->resetVelocityX();
-      player->setPosition(tile_right.getPosition().x - player->getGlobalBounds().width, player->getPosition().y);
+    if (tile_player.intersects(player->getGlobalBounds())) {
+      player->setPosition(player->getPosition().x, tile_player.top + (player->getVelocity().y < 0 ? 48 : -48));
+      player->resetVelocityY();
       player->collide();
     }
   }
-  if (LEVEL_1[index_left] == 1)
-  {
+  if (LEVEL_1[index_left] == 1) {
     const sf::FloatRect tile_left = tilemap->getTile(index_left);
-    if ((player->getPosition().x - (tile_left.getPosition().x + player->getGlobalBounds().width)) < 0.0 ) {
-      player->resetVelocityX();
-      player->setPosition(tile_left.getPosition().x + player->getGlobalBounds().width, player->getPosition().y);
+    if (tile_left.intersects(player->getGlobalBounds())) {
+      if (player->getVelocity().x < 0 )
+        player->resetVelocityX();
+      player->setPosition(tile_left.left + 48, player->getPosition().y);
+      player->collide();
+    }
+  }
+  if (LEVEL_1[index_right] == 1) {
+    const sf::FloatRect tile_right = tilemap->getTile(index_right);
+    if (tile_right.intersects(player->getGlobalBounds())) {
+      if (player->getVelocity().x > 0 )
+        player->resetVelocityX();
+      player->setPosition(tile_right.left - 48, player->getPosition().y);
       player->collide();
     }
   }
 
-    // for (int i = 0; i < LEVEL_1_HEIGHT; i++) {
-    //   for (int j = 0; j < LEVEL_1_WIDTH; j++) {
-    //     int idx = j + (LEVEL_1_WIDTH * i);
-    //     if (idx == indexLeft + 1) {
-    //       std::cout << "M";
-    //     }
-    //     else {
-    //       std::cout << LEVEL_1[j + (LEVEL_1_WIDTH * i)];
-    //     }
-    //   }
-    //   std::cout << std::endl;
-    // }
-    //
-    // std::cout << "Player x real = " << player->getPosition().x << " real y = " << player->getPosition().y << std::endl;
-    // std::cout << "Player x = " << player_coords.x << " y = " << player_coords.y << std::endl;
-    // std::cout << "Player vel x = " << player->getVelocity().x << std::endl;
-    // std::cout << "Player vel y = " << player->getVelocity().y << std::endl;
+  if (DEBUG) debugPrint(index_player);
+
+}
+
+void Game::debugPrint(int player_index) {
+  for (int i = 0; i < LEVEL_1_HEIGHT; i++) {
+    for (int j = 0; j < LEVEL_1_WIDTH; j++) {
+      int idx = j + (LEVEL_1_WIDTH * i);
+      if (idx == player_index) {
+        std::cout << "M";
+      }
+      else {
+        std::cout << LEVEL_1[j + (LEVEL_1_WIDTH * i)];
+      }
+    }
+    std::cout << std::endl;
+  }
+
+  std::cout << "Player real x = " << player->getPosition().x << " real y = " << player->getPosition().y << std::endl;
+  std::cout << "Player vel x = " << player->getVelocity().x << std::endl;
+  std::cout << "Player vel y = " << player->getVelocity().y << std::endl;
 }
 
 
