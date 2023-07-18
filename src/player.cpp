@@ -51,27 +51,40 @@ void Player::initSprite()
 void Player::initPhysics()
 {
   is_airborne = true;
-  velocity_max = 4.6f;
+  velocity_x_max = 4.6f;
   velocity_min = 0.1f;
-  acceleration = 0.82f;
-  drag = 0.95f;
-  gravity = 1.6f;
-  velocityMaxY = 16.0f;
+  acceleration = 0.80f;
+  drag = 0.93f;
+  gravity = 1.5f;
+  velocity_y_max = 18.0f;
 }
-
 
 
 void Player::updatePhysics()
 {
+
   // if jumping && not falling && spacebar is held: jump higher and stay in air longer
-  anim_state == JUMPING && velocity.y <= 0.f && sf::Keyboard::isKeyPressed(sf::Keyboard::Space) ?
-    velocity.y += (0.1f * gravity) * (1.5f * acceleration) : velocity.y += gravity * acceleration;
+  if (anim_state == JUMPING && velocity.y <= 0.f && sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+      if ((facing == LEFT && velocity.x < 0.f) || (facing == RIGHT && velocity.x > 0.f)) {
+          velocity.y += 0.06f * gravity * acceleration;
+      } else {
+          velocity.y += 0.07f * gravity * acceleration;
+      }
+  } else {
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+          velocity.y += 0.97 * gravity * acceleration;
+      } else {
+          velocity.y += gravity * acceleration;
+      }
+  }
 
   // limit y velocity
-  if (std::abs(velocity.y) > velocityMaxY)
+  if (std::abs(velocity.y) > velocity_y_max)
   {
-    velocity.y = velocityMaxY * ((velocity.y < 0.f) ? -1.f : 1.f);
+    velocity.y = velocity_y_max * ((velocity.y < 0.f) ? -1.f : 1.f);
   }
+
+
 
   // decelerate
   velocity *= drag;
@@ -109,9 +122,9 @@ void Player::move(sf::Vector2f movement, sf::Time deltaTime)
   velocity.y += movement.y * acceleration * gravity * deltaTime.asSeconds();
 
   // limit velocity
-  if (std::abs(velocity.x) > velocity_max)
+  if (std::abs(velocity.x) > velocity_x_max)
   {
-    velocity.x = velocity_max * ((velocity.x < 0.f) ? -1.f : 1.f);
+    velocity.x = velocity_x_max * ((velocity.x < 0.f) ? -1.f : 1.f);
   }
 }
 
@@ -121,7 +134,7 @@ void Player::jump()
   {
     is_airborne = true;
     anim_state = JUMPING;
-    velocity.y = -sqrt(2.0f) * gravity * 10.f;
+    velocity.y = -sqrt(2.0f) * gravity * 8.f;
   }
 }
 
@@ -267,7 +280,7 @@ void Player::setPosition(const float x, const float y)
 }
 
 const sf::Vector2i Player::getCoords() const {
-  return sf::Vector2i(std::round((getPosition().x / 48)), std::round(((getPosition().y) / 48) + 0.5));
+  return sf::Vector2i(std::round(getPosition().x / 48), std::round(((getPosition().y + (velocity.y <= 0.f ? 28 : 48)) / 48)));
 }
 
 

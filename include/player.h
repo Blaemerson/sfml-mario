@@ -49,12 +49,12 @@ private:
 
   // Physics
   sf::Vector2f velocity;
-  float velocity_max;
+  float velocity_x_max;
   float velocity_min;
   float acceleration;
   float drag;
   float gravity;
-  float velocityMaxY;
+  float velocity_y_max;
 
   bool is_airborne;
 
