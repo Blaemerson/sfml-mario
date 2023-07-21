@@ -203,6 +203,7 @@ void Player::updateAnimations() {
         sprite.setScale(-3.f, 3.f);
         sprite.setOrigin(sprite.getGlobalBounds().width / 3.f, 0.f);
       }
+      break;
     }
     case (JUMPING):
     {
