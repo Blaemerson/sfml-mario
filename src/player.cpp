@@ -40,12 +40,11 @@ void Player::initSprite() {
 /*              PHYSICS              */
 /*************************************/
 void Player::initPhysics() {
-  is_airborne = true;
   velocity_x_max = 4.6f;
   velocity_y_max = 18.0f;
   velocity_min = 0.1f;
   acceleration = 0.80f;
-  drag = 0.93f;
+  drag = 0.94;
   gravity = 1.5f;
 }
 
@@ -94,7 +93,9 @@ const Direction Player::getFacing() const { return facing; }
 /*              MOVEMENT             */
 /*************************************/
 void Player::move(sf::Vector2f movement, sf::Time deltaTime) {
-  facing = movement.x > 0 ? RIGHT : LEFT;
+  if (anim_state != JUMPING) {
+    facing = movement.x > 0 ? RIGHT : LEFT;
+  }
   // acceleration
   velocity.x += movement.x * acceleration * deltaTime.asSeconds();
   velocity.y += movement.y * acceleration * gravity * deltaTime.asSeconds();
@@ -109,7 +110,7 @@ void Player::jump() {
   if (!is_airborne) {
     is_airborne = true;
     anim_state = JUMPING;
-    velocity.y = -sqrt(2.0f) * gravity * 8.f;
+    velocity.y = -sqrt(2.0f) * gravity * (std::abs(velocity.x) < 3.f ? 10 : 10.0 * std::abs(velocity.x));
   }
 }
 
@@ -126,17 +127,32 @@ void Player::updateMovement(sf::Time deltaTime) {
 
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
     // If jumping to the left, slow down speed to the right
-    movement.x = is_airborne && velocity.x > 0.f ? -8.0f : -40.f;
+    movement.x = (is_airborne && velocity.x > 0.f ? -8.0f : -40.f);
     if (anim_state != JUMPING && !is_airborne) {
       anim_state = MOVING_LEFT;
     }
   } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
     // If jumping to the right, slow down speed to the left
-    movement.x = is_airborne && velocity.x < 0.f ? 8.0f : 40.f;
+    movement.x = (is_airborne && velocity.x < 0.f ? 8.0f : 40.f);
     if (anim_state != JUMPING && !is_airborne) {
       anim_state = MOVING_RIGHT;
     }
   }
+
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::R)) {
+    running = true;
+    velocity_x_max = 8.0f;
+    velocity_y_max = 20.f;
+    acceleration = 0.90f;
+    anim_speed_min = 0.06f;
+  } else {
+    running = false;
+    velocity_x_max = 4.6f;
+    velocity_y_max = 18.f;
+    acceleration = 0.80f;
+    anim_speed_min = 0.1f;
+  }
+
   move(movement, deltaTime);
 }
 
@@ -146,6 +162,7 @@ void Player::updateMovement(sf::Time deltaTime) {
 void Player::initAnimations() {
   anim_state = IDLE;
   anim_speed = 0.22f;
+  anim_speed_min = 0.1f;
   anim_timer.restart();
   anim_switch = true;
 }
@@ -164,8 +181,8 @@ void Player::animate() {
     } else {
       anim_speed += 0.01f * std::abs(velocity.x);
     }
-    if (anim_speed < 0.10f) {
-      anim_speed = 0.1f;
+    if (anim_speed < anim_speed_min) {
+      anim_speed = anim_speed_min;
     }
 
     resetAnimTimer();
@@ -225,6 +242,10 @@ const bool &Player::getAnimSwitch() {
 void Player::resetAnimTimer() {
   anim_timer.restart();
   anim_switch = true;
+}
+
+void Player::resetRunTimer() {
+  run_timer.restart();
 }
 
 /*************************************/

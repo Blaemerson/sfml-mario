@@ -10,7 +10,6 @@ public:
   Player();
   virtual ~Player();
 
-  //Accessors
   const bool& getAnimSwitch();
   const sf::Vector2f getPosition() const;
   const sf::Vector2i getCoords() const;
@@ -18,12 +17,12 @@ public:
   const sf::FloatRect getGlobalBounds() const;
   const Direction getFacing() const;
 
-  //Modifiers
   void setPosition(const float x, const float y);
   void resetVelocityY();
   void resetVelocityX();
-
   void resetAnimTimer();
+  void resetRunTimer();
+
   void move(sf::Vector2f movement, sf::Time deltaTime);
   void update(sf::Time deltaTime);
   void updateMovement(sf::Time deltaTime);
@@ -40,8 +39,10 @@ private:
 
   // Anim
   short anim_state;
+  bool running;
   sf::IntRect curr_frame;
   sf::Clock anim_timer;
+  sf::Clock run_timer;
   bool anim_switch;
   float anim_speed;
 
@@ -51,6 +52,7 @@ private:
   sf::Vector2f velocity;
   float velocity_x_max;
   float velocity_min;
+  float anim_speed_min;
   float acceleration;
   float drag;
   float gravity;
@@ -58,11 +60,7 @@ private:
 
   bool is_airborne;
 
-  // Move
-
-
   // Core
-
   void initTexture();
   void initSprite();
   void initAnimations();

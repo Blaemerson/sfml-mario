@@ -204,6 +204,7 @@ void Game::debugPrint(int player_index) {
   }
 
   std::cout << "Player real x = " << player->getPosition().x << " real y = " << player->getPosition().y << std::endl;
+  std::cout << "Player facing = " << player->getFacing() << std::endl;
   std::cout << "Player vel x = " << player->getVelocity().x << std::endl;
   std::cout << "Player vel y = " << player->getVelocity().y << std::endl;
 }
