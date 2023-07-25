@@ -1,6 +1,6 @@
 #pragma once
 #include "../include/stdafx.h"
-#include "window.h"
+#include "window.hpp"
 
 enum PLAYER_ANIMATION_STATES {IDLE = 0, MOVING_LEFT = 1, MOVING_RIGHT = 2, JUMPING = 3};
 typedef enum PLAYER_DIRECTION {LEFT, RIGHT} Direction;
@@ -32,7 +32,7 @@ public:
   void animate();
   void render(Window& target);
   void jump();
-  void collide();
+  void collide(bool floor);
 
 private:
   sf::Sprite sprite;

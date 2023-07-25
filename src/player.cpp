@@ -1,4 +1,4 @@
-#include "../include/player.h"
+#include "../include/player.hpp"
 #include "../include/stdafx.h"
 #include <math.h>
 
@@ -85,7 +85,14 @@ void Player::updatePhysics() {
   sprite.move(velocity);
 }
 
-void Player::collide() { anim_state = JUMPING; }
+void Player::collide(bool floor) {
+  if (floor) {
+    is_airborne = false;
+  } else {
+    is_airborne = true;
+    anim_state = JUMPING;
+  }
+}
 
 const Direction Player::getFacing() const { return facing; }
 
@@ -118,7 +125,10 @@ void Player::updateMovement(sf::Time deltaTime) {
   sf::Vector2f movement(0.f, 0.f);
 
   if (velocity.y == 0.f) {
-    is_airborne = false;
+    if (anim_state != JUMPING) {
+      is_airborne = false;
+    }
+
     if (std::abs(velocity.x) < 0.45f || anim_state == JUMPING) {
       anim_state = IDLE;
     }
@@ -126,6 +136,7 @@ void Player::updateMovement(sf::Time deltaTime) {
     is_airborne = true;
   }
 
+  // TODO: Move input code out of here
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
     // If jumping to the left, slow down speed to the right
     movement.x = (is_airborne && velocity.x > 0.f ? -8.0f : -40.f);
@@ -141,7 +152,10 @@ void Player::updateMovement(sf::Time deltaTime) {
   }
 
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {
-    jump();
+    if (anim_state != JUMPING) {
+      std::cout << "jumping" << std::endl;
+      jump();
+    }
   }
 
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::R)) {
@@ -184,6 +198,7 @@ void Player::animate() {
     } else {
       anim_speed += 0.01f * std::abs(velocity.x);
     }
+
     if (anim_speed < anim_speed_min) {
       anim_speed = anim_speed_min;
     }

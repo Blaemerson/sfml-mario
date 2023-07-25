@@ -1,5 +1,5 @@
 #include "../include/stdafx.h"
-#include "../include/game.h"
+#include "../include/game.hpp"
 // #include "../include/tilemap.h"
 
 int main(int argc, char** argv)
@@ -12,6 +12,7 @@ int main(int argc, char** argv)
   // Game loop
   sf::Time timeSinceLastUpdate = sf::Time::Zero;
   sf::Time timePerFrame = sf::seconds(1.f / 60.f);
+
   while(!game.getWindow()->isDone()) {
     game.processEvents();
 

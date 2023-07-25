@@ -1,4 +1,4 @@
-#include "../include/tilemap.h"
+#include "../include/tilemap.hpp"
 
 TileMap::TileMap(const std::string& tilesheet, const int &tiles, const unsigned int width, const unsigned int height, const unsigned int tile_size) {
   initTexture(tilesheet);

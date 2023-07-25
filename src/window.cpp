@@ -1,4 +1,4 @@
-#include "../include/window.h"
+#include "../include/window.hpp"
 
 Window::Window() {
   setup("Window", sf::Vector2u(640, 480));

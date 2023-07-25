@@ -1,8 +1,8 @@
 #pragma once
 #include "stdafx.h"
-#include "player.h"
-#include "tilemap.h"
-#include "window.h"
+#include "player.hpp"
+#include "tilemap.hpp"
+#include "window.hpp"
 
 /* Wrapper class */
 

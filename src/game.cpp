@@ -1,9 +1,9 @@
 #include "../include/stdafx.h"
-#include "../include/game.h"
+#include "../include/game.hpp"
 #include "../include/levels.h"
 #include <iostream>
 
-#define DEBUG 1
+#define DEBUG 0
 
 Game::Game()
 {
@@ -110,6 +110,7 @@ void Game::updateColision()
     if (tile_down.intersects(player->getGlobalBounds())) {
       player->resetVelocityY();
       player->setPosition(player->getPosition().x, tile_down.top - 48);
+      player->collide(true);
     }
   }
 
@@ -121,7 +122,7 @@ void Game::updateColision()
       if (tile_up.intersects(player->getGlobalBounds())) {
         player->setPosition(player->getPosition().x, tile_up.top + 48);
         player->resetVelocityY();
-        player->collide();
+        player->collide(false);
       }
     }
   }
@@ -133,7 +134,7 @@ void Game::updateColision()
     if (tile_player.intersects(player->getGlobalBounds())) {
       player->setPosition(player->getPosition().x, tile_player.top + (player->getVelocity().y < 0 ? 48 : -48));
       player->resetVelocityY();
-      player->collide();
+      player->collide(false);
     }
   }
 
@@ -145,7 +146,7 @@ void Game::updateColision()
       if (player->getVelocity().x < 0 )
         player->resetVelocityX();
       player->setPosition(tile_left.left + 48, player->getPosition().y);
-      player->collide();
+      player->collide(false);
     }
   }
 
@@ -157,7 +158,7 @@ void Game::updateColision()
       if (player->getVelocity().x > 0 )
         player->resetVelocityX();
       player->setPosition(tile_right.left - 48, player->getPosition().y);
-      player->collide();
+      player->collide(false);
     }
   }
 

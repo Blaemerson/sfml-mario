@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "window.h"
+#include "window.hpp"
 
 class TileMap: public sf::Drawable, public sf::Transformable
 {
