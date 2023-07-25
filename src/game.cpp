@@ -141,14 +141,18 @@ void Game::updateColision()
   int index_player = (player_coords.x) + (LEVEL_1_WIDTH) * (player_coords.y - 1);
 
   // sf::FloatRect p = player->getGlobalBounds();
-  if (LEVEL_1[index_down] == 1 || LEVEL_1[index_down - 1] == 1 || LEVEL_1[index_down + 1]) {
+  if (
+    index_down > -1 && index_down < LEVEL_1_WIDTH * LEVEL_1_HEIGHT &&
+    LEVEL_1[index_down] == 1) {
     const sf::FloatRect tile_down = tilemap->getTile(index_down);
     if (tile_down.intersects(player->getGlobalBounds())) {
       player->resetVelocityY();
       player->setPosition(player->getPosition().x, tile_down.top - 48);
     }
   }
-  if (LEVEL_1[index_up] == 1) {
+  if (
+    index_up > -1 && index_up < LEVEL_1_WIDTH * LEVEL_1_HEIGHT &&
+    LEVEL_1[index_up] == 1) {
     if (player->getVelocity().y < 0.f) {
       const sf::FloatRect tile_up = tilemap->getTile(index_up);
       if (tile_up.intersects(player->getGlobalBounds())) {
@@ -158,7 +162,9 @@ void Game::updateColision()
       }
     }
   }
-  if (LEVEL_1[index_player] == 1) {
+  if (
+    index_player > -1 && index_player < LEVEL_1_WIDTH * LEVEL_1_HEIGHT &&
+    LEVEL_1[index_player] == 1) {
     const sf::FloatRect tile_player = tilemap->getTile(index_player);
     if (tile_player.intersects(player->getGlobalBounds())) {
       player->setPosition(player->getPosition().x, tile_player.top + (player->getVelocity().y < 0 ? 48 : -48));
@@ -166,7 +172,9 @@ void Game::updateColision()
       player->collide();
     }
   }
-  if (LEVEL_1[index_left] == 1) {
+  if (
+    index_left > -1 && index_left < LEVEL_1_WIDTH * LEVEL_1_HEIGHT &&
+    LEVEL_1[index_left] == 1) {
     const sf::FloatRect tile_left = tilemap->getTile(index_left);
     if (tile_left.intersects(player->getGlobalBounds())) {
       if (player->getVelocity().x < 0 )
@@ -175,7 +183,9 @@ void Game::updateColision()
       player->collide();
     }
   }
-  if (LEVEL_1[index_right] == 1) {
+  if (
+    index_right > -1 && index_right < LEVEL_1_WIDTH * LEVEL_1_HEIGHT &&
+    LEVEL_1[index_right] == 1) {
     const sf::FloatRect tile_right = tilemap->getTile(index_right);
     if (tile_right.intersects(player->getGlobalBounds())) {
       if (player->getVelocity().x > 0 )
