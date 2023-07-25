@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include "window.h"
 
 class TileMap: public sf::Drawable, public sf::Transformable
 {
@@ -8,6 +9,7 @@ public:
     bool initTexture(const std::string& tilesheet);
     bool load();
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+    void draw(Window& window);
     const sf::FloatRect getTile(int pos);
 private:
 

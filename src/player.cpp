@@ -21,7 +21,9 @@ void Player::update(sf::Time deltaTime) {
 /*************************************/
 /*             RENDERING             */
 /*************************************/
-void Player::render(sf::RenderTarget &target) { target.draw(sprite); }
+void Player::render(Window& target) {
+  target.draw(sprite);
+}
 
 void Player::initTexture() {
   if (!tex_sheet.loadFromFile("textures/mario.png")) {
@@ -52,10 +54,8 @@ void Player::updatePhysics() {
 
   // if jumping && not falling && spacebar is held: jump higher and stay in air
   // longer
-  if (anim_state == JUMPING && velocity.y <= 0.f &&
-      sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
-    if ((facing == LEFT && velocity.x < 0.f) ||
-        (facing == RIGHT && velocity.x > 0.f)) {
+  if (anim_state == JUMPING && velocity.y <= 0.f && sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+    if ((facing == LEFT && velocity.x < 0.f) || (facing == RIGHT && velocity.x > 0.f)) {
       velocity.y += 0.06f * gravity * acceleration;
     } else {
       velocity.y += 0.07f * gravity * acceleration;
@@ -116,6 +116,7 @@ void Player::jump() {
 
 void Player::updateMovement(sf::Time deltaTime) {
   sf::Vector2f movement(0.f, 0.f);
+
   if (velocity.y == 0.f) {
     is_airborne = false;
     if (std::abs(velocity.x) < 0.45f || anim_state == JUMPING) {
@@ -139,6 +140,10 @@ void Player::updateMovement(sf::Time deltaTime) {
     }
   }
 
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {
+    jump();
+  }
+
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::R)) {
     running = true;
     velocity_x_max = 8.0f;
@@ -146,10 +151,8 @@ void Player::updateMovement(sf::Time deltaTime) {
     acceleration = 0.90f;
     anim_speed_min = 0.06f;
   } else {
-    running = false;
-    velocity_x_max = 4.6f;
-    velocity_y_max = 18.f;
-    acceleration = 0.80f;
+    initPhysics();
+
     anim_speed_min = 0.1f;
   }
 

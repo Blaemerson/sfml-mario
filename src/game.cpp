@@ -21,62 +21,25 @@ Game::~Game()
 
 void Game::initView()
 {
-  view.setSize(window.getSize().x, window.getSize().y);
-  view.setCenter(window.getSize().x/2.f, window.getSize().y/2.f);
+  view.setSize(window->getSize().x, window->getSize().y);
+  view.setCenter(window->getSize().x/2.f, window->getSize().y/2.f);
 }
-// Accessors
-const sf::RenderWindow& Game::getWindow() const
+
+Window* Game::getWindow()
 {
   return window;
 }
+
 void Game::processEvents()
 {
-  while (window.pollEvent(event))
-  {
-    switch (event.type)
-    {
-      case sf::Event::Closed:
-      {
-        window.close();
-        break;
-      }
-      case sf::Event::KeyPressed:
-      {
-        if (event.key.code == sf::Keyboard::Q)
-        {
-          window.close();
-        }
-        else if (event.key.code == sf::Keyboard::Space)
-        {
-          player->jump();
-        }
-        break;
-      }
-      case sf::Event::KeyReleased:
-      {
-        if (event.key.code == sf::Keyboard::A || event.key.code == sf::Keyboard::D)
-        {
-          player->resetAnimTimer();
-        }
-        if (event.key.code == sf::Keyboard::N)
-        {
-          delete player;
-          initPlayer();
-        }
-        break;
-      }
-      default:
-      {
-        break;
-      }
-    }
-  }
+  window->update();
 }
 
 	/* bool space_held = false; */
 void Game::update(sf::Time deltaTime)
 {
   player->update(deltaTime);
+  window->update();
   updateView();
   updateColision();
 }
@@ -93,17 +56,14 @@ sf::Time Game::restartClock()
 void Game::render()
 {
 
-  window.clear(sf::Color::Cyan);
-
-  window.setView(view);
+  window->beginDraw();
+  window->setView(view);
 
   // Draw game objects
   renderMap();
   renderPlayer();
 
-  window.setView(window.getDefaultView());
-
-  window.display();
+  window->endDraw();
 }
 
 
@@ -114,6 +74,7 @@ void Game::updateView()
   const unsigned int level_edge_left = 48 * (diff * 4);
   const unsigned int scroll_end = 48 * (LEVEL_1_WIDTH - (diff * 4));
   const unsigned int level_edge_right = 48 * (LEVEL_1_WIDTH - (diff * 4));
+
   if (player->getPosition().x < scroll_begin) {
     view.setCenter(level_edge_left, (LEVEL_1_HEIGHT * 48) / 3.25);
   } else if (player->getPosition().x > scroll_end) {
@@ -125,10 +86,11 @@ void Game::updateView()
 
 void Game::updateColision()
 {
-  if (player->getPosition().y + player->getGlobalBounds().height > window.getSize().y)
+  if (player->getPosition().y + player->getGlobalBounds().height > window->getSize().y)
   {
     player->resetVelocityY();
-    player->setPosition(player->getPosition().x, window.getSize().y - player->getGlobalBounds().height);
+    player->setPosition(player->getPosition().x, window->getSize().y - player->getGlobalBounds().height);
+
     return;
   }
 
@@ -150,6 +112,7 @@ void Game::updateColision()
       player->setPosition(player->getPosition().x, tile_down.top - 48);
     }
   }
+
   if (
     index_up > -1 && index_up < LEVEL_1_WIDTH * LEVEL_1_HEIGHT &&
     LEVEL_1[index_up] == 1) {
@@ -162,6 +125,7 @@ void Game::updateColision()
       }
     }
   }
+
   if (
     index_player > -1 && index_player < LEVEL_1_WIDTH * LEVEL_1_HEIGHT &&
     LEVEL_1[index_player] == 1) {
@@ -172,6 +136,7 @@ void Game::updateColision()
       player->collide();
     }
   }
+
   if (
     index_left > -1 && index_left < LEVEL_1_WIDTH * LEVEL_1_HEIGHT &&
     LEVEL_1[index_left] == 1) {
@@ -183,6 +148,7 @@ void Game::updateColision()
       player->collide();
     }
   }
+
   if (
     index_right > -1 && index_right < LEVEL_1_WIDTH * LEVEL_1_HEIGHT &&
     LEVEL_1[index_right] == 1) {
@@ -222,22 +188,19 @@ void Game::debugPrint(int player_index) {
 
 void Game::renderPlayer()
 {
-  player->render(window);
+  player->render(*window);
 }
 
 void Game::renderMap()
 {
   sf::RenderStates states;
-  tilemap->draw(window, states);
+  tilemap->draw(window->getTarget(), states);
 }
 
 
-void Game::initWindow()
-{
-  window.create(sf::VideoMode(16 * 60, 16 * 50), "MyGame", sf::Style::Close | sf::Style::Titlebar);
-  window.setFramerateLimit(60);
-  window.setKeyRepeatEnabled(false);
-
+void Game::initWindow() {
+  window = new Window("MyGame", sf::Vector2u(16 * 60, 16 * 50));
+  // window.create(sf::VideoMode(16 * 60, 16 * 50), "MyGame", sf::Style::Close | sf::Style::Titlebar);
 }
 
 void Game::initPlayer()

@@ -12,14 +12,15 @@ int main(int argc, char** argv)
   // Game loop
   sf::Time timeSinceLastUpdate = sf::Time::Zero;
   sf::Time timePerFrame = sf::seconds(1.f / 60.f);
-  while(game.getWindow().isOpen())
-  {
+  while(!game.getWindow()->isDone()) {
     game.processEvents();
+
     timeSinceLastUpdate += game.restartClock();
     while (timeSinceLastUpdate > timePerFrame) {
       timeSinceLastUpdate -= timePerFrame;
       game.update(timePerFrame);
     }
+
     game.render();
   }
 

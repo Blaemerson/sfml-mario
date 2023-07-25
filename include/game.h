@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "player.h"
 #include "tilemap.h"
+#include "window.h"
 
 /* Wrapper class */
 
@@ -13,7 +14,7 @@ public:
   virtual ~Game();
 
   // Accessors
-  const sf::RenderWindow& getWindow() const;
+  Window* getWindow();
 
   // Methods
   void update(sf::Time delta_time);
@@ -29,9 +30,8 @@ public:
   sf::Time restartClock();
 private:
   // Variables / window
-  sf::RenderWindow window;
-  sf::VideoMode video_mode;
-  sf::Event event;
+  // sf::RenderWindow window;
+  Window* window;
   sf::View view;
 
   sf::Clock clock;

@@ -62,12 +62,7 @@ bool TileMap::load()
 
 const sf::FloatRect TileMap::getTile(int pos) {
   sf::Vertex* quad = &vertices[(pos) * 4];
-  sf::FloatRect tile;
-  if (pos < 0 || pos > height * width) {
-    tile = sf::FloatRect(-1, -1, 48, 48);
-  } else {
-    tile = sf::FloatRect(quad[0].position.x * 3.0, quad[0].position.y * 3.0, 48, 48);
-  }
+  sf::FloatRect tile = sf::FloatRect(quad[0].position.x * 3.0, quad[0].position.y * 3.0, 48, 48);
   return tile;
 }
 
