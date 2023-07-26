@@ -1,7 +1,7 @@
 #include "../include/window.hpp"
 
 Window::Window() {
-  setup("Window", sf::Vector2u(640, 480));
+  setup("Window", sf::Vector2u(1920, 1080));
 }
 
 Window::Window(const std::string& title, const sf::Vector2u& size) {

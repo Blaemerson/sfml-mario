@@ -7,6 +7,8 @@
 
 Game::Game()
 {
+  textbox.setup(5, 14, 350, sf::Vector2f(0, -10));
+
   initWindow();
   initView();
   initPlayer();
@@ -21,25 +23,25 @@ Game::~Game()
 
 void Game::initView()
 {
-  view.setSize(window->getSize().x, window->getSize().y);
-  view.setCenter(window->getSize().x/2.f, window->getSize().y/2.f);
+  view.setSize(window.getSize().x, window.getSize().y);
+  view.setCenter(window.getSize().x/2.f, window.getSize().y/2.f);
 }
 
 Window* Game::getWindow()
 {
-  return window;
+  return &window;
 }
 
 void Game::processEvents()
 {
-  window->update();
+  window.update();
 }
 
 	/* bool space_held = false; */
 void Game::update(sf::Time deltaTime)
 {
   player->update(deltaTime);
-  window->update();
+  window.update();
   updateView();
   updateColision();
 }
@@ -56,14 +58,21 @@ sf::Time Game::restartClock()
 void Game::render()
 {
 
-  window->beginDraw();
-  window->setView(view);
+  window.beginDraw();
+  window.setView(view);
 
   // Draw game objects
   renderMap();
   renderPlayer();
 
-  window->endDraw();
+  textbox.add("Player facing = " + std::to_string(player->getFacing()));
+  textbox.add("Player real x = " + std::to_string(player->getPosition().x) + " real y = " + std::to_string(player->getPosition().y));
+  textbox.add("Player vel x = " + std::to_string(player->getVelocity().x));
+  textbox.add("Player vel y = " + std::to_string(player->getVelocity().y));
+  textbox.render(*window.getTarget());
+  textbox.setScreenPos(sf::Vector2f(view.getCenter().x - (window.getSize().x / 2.f), 0));
+
+  window.endDraw();
 }
 
 
@@ -76,20 +85,20 @@ void Game::updateView()
   const unsigned int level_edge_right = 48 * (LEVEL_1_WIDTH - (diff * 4));
 
   if (player->getPosition().x < scroll_begin) {
-    view.setCenter(level_edge_left, (LEVEL_1_HEIGHT * 48) / 3.25);
+    view.setCenter(level_edge_left, window.getSize().y / 2.f);
   } else if (player->getPosition().x > scroll_end) {
-    view.setCenter(level_edge_right, (LEVEL_1_HEIGHT * 48) / 3.25);
+    view.setCenter(level_edge_right, window.getSize().y / 2.f);
   } else {
-    view.setCenter(player->getPosition().x, (LEVEL_1_HEIGHT * 48) / 3.25);
+    view.setCenter(player->getPosition().x, window.getSize().y / 2.f);
   }
 }
 
 void Game::updateColision()
 {
-  if (player->getPosition().y + player->getGlobalBounds().height > window->getSize().y)
+  if (player->getPosition().y + player->getGlobalBounds().height > window.getSize().y)
   {
     player->resetVelocityY();
-    player->setPosition(player->getPosition().x, window->getSize().y - player->getGlobalBounds().height);
+    player->setPosition(player->getPosition().x, window.getSize().y - player->getGlobalBounds().height);
 
     return;
   }
@@ -189,18 +198,17 @@ void Game::debugPrint(int player_index) {
 
 void Game::renderPlayer()
 {
-  player->render(*window);
+  player->render(*window.getTarget());
 }
 
 void Game::renderMap()
 {
   sf::RenderStates states;
-  tilemap->draw(window->getTarget(), states);
+  tilemap->draw(*window.getTarget(), states);
 }
 
 
 void Game::initWindow() {
-  window = new Window("MyGame", sf::Vector2u(16 * 60, 16 * 50));
   // window.create(sf::VideoMode(16 * 60, 16 * 50), "MyGame", sf::Style::Close | sf::Style::Titlebar);
 }
 

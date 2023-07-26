@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "player.hpp"
+#include "textbox.hpp"
 #include "tilemap.hpp"
 #include "window.hpp"
 
@@ -31,7 +32,9 @@ public:
 private:
   // Variables / window
   // sf::RenderWindow window;
-  Window* window;
+  Window window;
+  Textbox textbox;
+
   sf::View view;
 
   sf::Clock clock;

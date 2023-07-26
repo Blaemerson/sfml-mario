@@ -21,7 +21,7 @@ void Player::update(sf::Time deltaTime) {
 /*************************************/
 /*             RENDERING             */
 /*************************************/
-void Player::render(Window& target) {
+void Player::render(sf::RenderTarget& target) {
   target.draw(sprite);
 }
 

@@ -25,8 +25,8 @@ public:
     return size;
   }
 
-  sf::RenderTarget& getTarget() {
-    return this->window;
+  sf::RenderWindow* getTarget() {
+    return &window;
   }
 
   void setView(sf::View view);

@@ -30,7 +30,7 @@ public:
   void updateAnimations();
   void updatePhysics();
   void animate();
-  void render(Window& target);
+  void render(sf::RenderTarget& target);
   void jump();
   void collide(bool floor);
 
