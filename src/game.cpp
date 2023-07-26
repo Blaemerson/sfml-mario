@@ -155,7 +155,7 @@ void Game::updateColision()
       if (player->getVelocity().x < 0 )
         player->resetVelocityX();
       player->setPosition(tile_left.left + 48, player->getPosition().y);
-      player->collide(false);
+      player->collide(true);
     }
   }
 
@@ -167,7 +167,7 @@ void Game::updateColision()
       if (player->getVelocity().x > 0 )
         player->resetVelocityX();
       player->setPosition(tile_right.left - 48, player->getPosition().y);
-      player->collide(false);
+      player->collide(true);
     }
   }
 
