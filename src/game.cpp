@@ -9,7 +9,7 @@ Game::Game()
 {
   textbox.setup(5, 14, 350, sf::Vector2f(0, -10));
 
-  initWindow();
+  // initWindow();
   initView();
   initPlayer();
   initMap();
@@ -38,9 +38,9 @@ void Game::processEvents()
 }
 
 	/* bool space_held = false; */
-void Game::update(sf::Time deltaTime)
+void Game::update(sf::Time dt)
 {
-  player->update(deltaTime);
+  player->update(dt);
   window.update();
   updateView();
   updateColision();
@@ -105,96 +105,76 @@ void Game::updateColision()
 
 
   sf::Vector2i player_coords = player->getCoords();
-  int index_down = player_coords.x + (LEVEL_1_WIDTH) * (player_coords.y);
-  int index_right = (player_coords.x + 1) + (LEVEL_1_WIDTH) * (player_coords.y - 1);
-  int index_left = (player_coords.x - 1) + (LEVEL_1_WIDTH) * (player_coords.y - 1);
-  int index_up = (player_coords.x) + (LEVEL_1_WIDTH) * (player_coords.y - 2);
-  int index_player = (player_coords.x) + (LEVEL_1_WIDTH) * (player_coords.y - 1);
+  int player_idx = (player_coords.x) + (LEVEL_1_WIDTH) * (player_coords.y - 1);
+  int down_idx = player_idx + LEVEL_1_WIDTH;
+  int right_idx = player_idx + 1;
+  int left_idx = player_idx - 1;
+  int up_idx = player_idx - LEVEL_1_WIDTH;
 
-  // sf::FloatRect p = player->getGlobalBounds();
-  if (
-    index_down > -1 && index_down < LEVEL_1_WIDTH * LEVEL_1_HEIGHT &&
-    LEVEL_1[index_down] == 1) {
-    const sf::FloatRect tile_down = tilemap->getTile(index_down);
-    if (tile_down.intersects(player->getGlobalBounds())) {
-      player->resetVelocityY();
-      player->setPosition(player->getPosition().x, tile_down.top - 48);
-      player->collide(true);
+  const int max_tiles = LEVEL_1_HEIGHT * LEVEL_1_WIDTH;
+
+  if (down_idx > -1 && down_idx < max_tiles) {
+    if (LEVEL_1[down_idx] == 1) {
+      const sf::FloatRect tile_down = tilemap->getTile(down_idx);
+      if (tile_down.intersects(player->getGlobalBounds())) {
+        player->resetVelocityY();
+        player->setPosition(player->getPosition().x, tile_down.top - 48);
+        player->collide(true);
+      }
     }
   }
 
-  if (
-    index_up > -1 && index_up < LEVEL_1_WIDTH * LEVEL_1_HEIGHT &&
-    LEVEL_1[index_up] == 1) {
-    if (player->getVelocity().y < 0.f) {
-      const sf::FloatRect tile_up = tilemap->getTile(index_up);
-      if (tile_up.intersects(player->getGlobalBounds())) {
-        player->setPosition(player->getPosition().x, tile_up.top + 48);
+  if (up_idx > -1 && up_idx < max_tiles) {
+    if (LEVEL_1[up_idx] == 1) {
+      if (player->getVelocity().y < 0.f) {
+        const sf::FloatRect tile_up = tilemap->getTile(up_idx);
+        if (tile_up.intersects(player->getGlobalBounds())) {
+          player->setPosition(player->getPosition().x, tile_up.top + 48);
+          player->resetVelocityY();
+          player->collide(false);
+        }
+      }
+    }
+  }
+
+  if (player_idx > -1 && player_idx < max_tiles) {
+     if( LEVEL_1[player_idx] == 1) {
+      const sf::FloatRect tile_player = tilemap->getTile(player_idx);
+      if (tile_player.intersects(player->getGlobalBounds())) {
+        player->setPosition(player->getPosition().x, tile_player.top + (player->getVelocity().y < 0 ? 48 : -48));
         player->resetVelocityY();
         player->collide(false);
       }
     }
   }
 
-  if (
-    index_player > -1 && index_player < LEVEL_1_WIDTH * LEVEL_1_HEIGHT &&
-    LEVEL_1[index_player] == 1) {
-    const sf::FloatRect tile_player = tilemap->getTile(index_player);
-    if (tile_player.intersects(player->getGlobalBounds())) {
-      player->setPosition(player->getPosition().x, tile_player.top + (player->getVelocity().y < 0 ? 48 : -48));
-      player->resetVelocityY();
-      player->collide(false);
-    }
-  }
-
-  if (
-    index_left > -1 && index_left < LEVEL_1_WIDTH * LEVEL_1_HEIGHT &&
-    LEVEL_1[index_left] == 1) {
-    const sf::FloatRect tile_left = tilemap->getTile(index_left);
-    if (tile_left.intersects(player->getGlobalBounds())) {
-      if (player->getVelocity().x < 0 )
-        player->resetVelocityX();
-      player->setPosition(tile_left.left + 48, player->getPosition().y);
-      player->collide(true);
-    }
-  }
-
-  if (
-    index_right > -1 && index_right < LEVEL_1_WIDTH * LEVEL_1_HEIGHT &&
-    LEVEL_1[index_right] == 1) {
-    const sf::FloatRect tile_right = tilemap->getTile(index_right);
-    if (tile_right.intersects(player->getGlobalBounds())) {
-      if (player->getVelocity().x > 0 )
-        player->resetVelocityX();
-      player->setPosition(tile_right.left - 48, player->getPosition().y);
-      player->collide(true);
-    }
-  }
-
-  if (DEBUG) debugPrint(index_player);
-
-}
-
-void Game::debugPrint(int player_index) {
-  for (int i = 0; i < LEVEL_1_HEIGHT; i++) {
-    for (int j = 0; j < LEVEL_1_WIDTH; j++) {
-      int idx = j + (LEVEL_1_WIDTH * i);
-      if (idx == player_index) {
-        std::cout << "M";
-      }
-      else {
-        std::cout << LEVEL_1[j + (LEVEL_1_WIDTH * i)];
+  if (left_idx > -1 && left_idx < max_tiles) {
+    if (LEVEL_1[left_idx] == 1) {
+      const sf::FloatRect tile_left = tilemap->getTile(left_idx);
+      if (tile_left.intersects(player->getGlobalBounds())) {
+        if (player->getVelocity().x < 0) {
+          player->resetVelocityX();
+        }
+        player->setPosition(tile_left.left + 48, player->getPosition().y);
+        player->collide(true);
       }
     }
-    std::cout << std::endl;
   }
 
-  std::cout << "Player real x = " << player->getPosition().x << " real y = " << player->getPosition().y << std::endl;
-  std::cout << "Player facing = " << player->getFacing() << std::endl;
-  std::cout << "Player vel x = " << player->getVelocity().x << std::endl;
-  std::cout << "Player vel y = " << player->getVelocity().y << std::endl;
-}
+  if (right_idx > -1 && right_idx < max_tiles) {
+    if (LEVEL_1[right_idx] == 1) {
+      const sf::FloatRect tile_right = tilemap->getTile(right_idx);
+      if (tile_right.intersects(player->getGlobalBounds())) {
+        if (player->getVelocity().x > 0 ) {
+          player->resetVelocityX();
+        }
+        player->setPosition(tile_right.left - 48, player->getPosition().y);
+        player->collide(true);
+      }
+    }
+  }
 
+}
 
 void Game::renderPlayer()
 {

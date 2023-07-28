@@ -1,5 +1,4 @@
 #include "../include/player.hpp"
-#include "../include/stdafx.h"
 #include <math.h>
 
 Player::Player() {
@@ -12,15 +11,12 @@ Player::Player() {
 
 Player::~Player() {}
 
-void Player::update(sf::Time deltaTime) {
-  updateMovement(deltaTime);
+void Player::update(sf::Time dt) {
+  updateMovement(dt);
   updateAnimations();
   updatePhysics();
 }
 
-/*************************************/
-/*             RENDERING             */
-/*************************************/
 void Player::render(sf::RenderTarget& target) {
   target.draw(sprite);
 }
@@ -38,9 +34,6 @@ void Player::initSprite() {
   sprite.setScale(3.0f, 3.0f);
 }
 
-/*************************************/
-/*              PHYSICS              */
-/*************************************/
 void Player::initPhysics() {
   velocity_x_max = 4.6f;
   velocity_y_max = 18.0f;
@@ -52,8 +45,7 @@ void Player::initPhysics() {
 
 void Player::updatePhysics() {
 
-  // if jumping && not falling && spacebar is held: jump higher and stay in air
-  // longer
+  // if jumping && not falling && spacebar is held: jump higher and stay in air longer
   if (anim_state == JUMPING && velocity.y <= 0.f && sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
     if ((facing == LEFT && velocity.x < 0.f) || (facing == RIGHT && velocity.x > 0.f)) {
       velocity.y += 0.06f * gravity * acceleration;
@@ -99,15 +91,14 @@ const Direction Player::getFacing() const { return facing; }
 /*************************************/
 /*              MOVEMENT             */
 /*************************************/
-void Player::move(sf::Vector2f movement, sf::Time deltaTime) {
+void Player::move(sf::Vector2f movement, sf::Time dt) {
   if (anim_state != JUMPING) {
     facing = movement.x > 0 ? RIGHT : LEFT;
   }
-  // acceleration
-  velocity.x += movement.x * acceleration * deltaTime.asSeconds();
-  velocity.y += movement.y * acceleration * gravity * deltaTime.asSeconds();
 
-  // limit velocity
+  velocity.x += movement.x * acceleration * dt.asSeconds();
+  velocity.y += movement.y * acceleration * gravity * dt.asSeconds();
+
   if (std::abs(velocity.x) > velocity_x_max) {
     velocity.x = velocity_x_max * ((velocity.x < 0.f) ? -1.f : 1.f);
   }
@@ -121,7 +112,7 @@ void Player::jump() {
   }
 }
 
-void Player::updateMovement(sf::Time deltaTime) {
+void Player::updateMovement(sf::Time dt) {
   sf::Vector2f movement(0.f, 0.f);
 
   if (velocity.y == 0.f) {
@@ -170,7 +161,7 @@ void Player::updateMovement(sf::Time deltaTime) {
     anim_speed_min = 0.1f;
   }
 
-  move(movement, deltaTime);
+  move(movement, dt);
 }
 
 /*************************************/

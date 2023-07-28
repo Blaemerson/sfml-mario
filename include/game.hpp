@@ -18,15 +18,13 @@ public:
   Window* getWindow();
 
   // Methods
-  void update(sf::Time delta_time);
+  void update(sf::Time dt);
   void processEvents();
   void render();
   void updateView();
   void updateColision();
   void renderPlayer();
   void renderMap();
-
-  void debugPrint(int player_index);
 
   sf::Time restartClock();
 private:

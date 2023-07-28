@@ -24,9 +24,9 @@ public:
   void resetAnimTimer();
   void resetRunTimer();
 
-  void move(sf::Vector2f movement, sf::Time deltaTime);
-  void update(sf::Time deltaTime);
-  void updateMovement(sf::Time deltaTime);
+  void move(sf::Vector2f movement, sf::Time dt);
+  void update(sf::Time dt);
+  void updateMovement(sf::Time dt);
   void updateAnimations();
   void updatePhysics();
   void animate();
