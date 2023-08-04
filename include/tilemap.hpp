@@ -5,14 +5,17 @@
 class TileMap: public sf::Drawable, public sf::Transformable
 {
 public:
-    TileMap(const std::string& tilesheet, const int &tiles, const unsigned int height, const unsigned int width, const unsigned int tileSize);
-    bool initTexture(const std::string& tilesheet);
-    bool load();
-    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
-    void draw(Window& window);
-    const sf::FloatRect getTile(int pos);
-private:
+    TileMap(std::string tilesheet, const int &tiles, const unsigned int height, const unsigned int width, const unsigned int tileSize);
+    sf::FloatRect getTile(int pos);
 
+    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+    bool load();
+
+private:
+    bool initTexture(std::string& tilesheet) ;
+    void draw(const Window& window);
+
+private:
     unsigned int height;
     unsigned int width;
     unsigned int tile_size;

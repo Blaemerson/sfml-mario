@@ -5,19 +5,14 @@
 #include "tilemap.hpp"
 #include "window.hpp"
 
-/* Wrapper class */
-
 class Game
 {
 public:
-  // Consructor / Destructor
   Game();
   virtual ~Game();
 
-  // Accessors
   Window* getWindow();
 
-  // Methods
   void update(sf::Time dt);
   void processEvents();
   void render();
@@ -27,9 +22,14 @@ public:
   void renderMap();
 
   sf::Time restartClock();
+
 private:
-  // Variables / window
-  // sf::RenderWindow window;
+  void initWindow();
+  void initView();
+  void initPlayer();
+  void initMap();
+
+private:
   Window window;
   Textbox textbox;
 
@@ -37,14 +37,7 @@ private:
 
   sf::Clock clock;
 
-  // Game objects
   Player* player;
   TileMap* tilemap;
-
-  // Private methods
-  void initWindow();
-  void initView();
-  void initPlayer();
-  void initMap();
 };
 

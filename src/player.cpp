@@ -11,7 +11,7 @@ Player::Player() {
 
 Player::~Player() {}
 
-void Player::update(sf::Time dt) {
+void Player::update(const sf::Time& dt) {
   updateMovement(dt);
   updateAnimations();
   updatePhysics();
@@ -27,6 +27,7 @@ void Player::initTexture() {
               << std::endl;
   }
 }
+
 void Player::initSprite() {
   sprite.setTexture(tex_sheet);
   curr_frame = sf::IntRect(0, 0, 16, 16);
@@ -77,21 +78,13 @@ void Player::updatePhysics() {
   sprite.move(velocity);
 }
 
-void Player::collide(bool floor) {
-  if (floor) {
-    is_airborne = false;
-  } else {
-    is_airborne = true;
-    anim_state = JUMPING;
-  }
+void Player::collide() {
+  is_airborne = true;
 }
 
 const Direction Player::getFacing() const { return facing; }
 
-/*************************************/
-/*              MOVEMENT             */
-/*************************************/
-void Player::move(sf::Vector2f movement, sf::Time dt) {
+void Player::move(const sf::Vector2f& movement, sf::Time dt) {
   if (anim_state != JUMPING) {
     facing = movement.x > 0 ? RIGHT : LEFT;
   }
@@ -108,7 +101,7 @@ void Player::jump() {
   if (!is_airborne) {
     is_airborne = true;
     anim_state = JUMPING;
-    velocity.y = -sqrt(2.0f) * gravity * (std::abs(velocity.x) < 3.f ? 10 : 10.0 * std::abs(velocity.x));
+    velocity.y = -sqrt(2.0f) * gravity * 10.f;
   }
 }
 
@@ -164,9 +157,6 @@ void Player::updateMovement(sf::Time dt) {
   move(movement, dt);
 }
 
-/*************************************/
-/*             ANIMATION             */
-/*************************************/
 void Player::initAnimations() {
   anim_state = IDLE;
   anim_speed = 0.22f;
@@ -257,23 +247,23 @@ void Player::resetRunTimer() {
   run_timer.restart();
 }
 
-/*************************************/
-/*         GETTERS / SETTERS         */
-/*************************************/
+const sf::Vector2f Player::getPosition() const {
+  return sprite.getPosition();
+}
 
-const sf::Vector2f Player::getPosition() const { return sprite.getPosition(); }
 void Player::setPosition(const float x, const float y) {
   sprite.setPosition(x, y);
-  // velocity.y = 0.f;
 }
 
 const sf::Vector2i Player::getCoords() const {
   return sf::Vector2i(
       std::round(getPosition().x / 48),
-      std::round(((getPosition().y + (velocity.y <= 0.f ? 28 : 48)) / 48)));
+      std::round(((getPosition().y + (velocity.y <= 0.f ? 24 : 48)) / 48)));
 }
 
-sf::Vector2f Player::getVelocity() { return velocity; }
+const sf::Vector2f Player::getVelocity() const {
+  return velocity;
+}
 
 const sf::FloatRect Player::getGlobalBounds() const {
   return sprite.getGlobalBounds();

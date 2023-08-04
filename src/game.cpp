@@ -119,7 +119,7 @@ void Game::updateColision()
       if (tile_down.intersects(player->getGlobalBounds())) {
         player->resetVelocityY();
         player->setPosition(player->getPosition().x, tile_down.top - 48);
-        player->collide(true);
+        player->collide();
       }
     }
   }
@@ -131,7 +131,7 @@ void Game::updateColision()
         if (tile_up.intersects(player->getGlobalBounds())) {
           player->setPosition(player->getPosition().x, tile_up.top + 48);
           player->resetVelocityY();
-          player->collide(false);
+          player->collide();
         }
       }
     }
@@ -143,7 +143,7 @@ void Game::updateColision()
       if (tile_player.intersects(player->getGlobalBounds())) {
         player->setPosition(player->getPosition().x, tile_player.top + (player->getVelocity().y < 0 ? 48 : -48));
         player->resetVelocityY();
-        player->collide(false);
+        player->collide();
       }
     }
   }
@@ -156,7 +156,7 @@ void Game::updateColision()
           player->resetVelocityX();
         }
         player->setPosition(tile_left.left + 48, player->getPosition().y);
-        player->collide(true);
+        player->collide();
       }
     }
   }
@@ -169,7 +169,7 @@ void Game::updateColision()
           player->resetVelocityX();
         }
         player->setPosition(tile_right.left - 48, player->getPosition().y);
-        player->collide(true);
+        player->collide();
       }
     }
   }

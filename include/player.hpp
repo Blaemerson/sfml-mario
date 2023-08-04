@@ -14,7 +14,7 @@ public:
   const bool& getAnimSwitch();
   const sf::Vector2f getPosition() const;
   const sf::Vector2i getCoords() const;
-  sf::Vector2f getVelocity();
+  const sf::Vector2f getVelocity() const;
   const sf::FloatRect getGlobalBounds() const;
   const Direction getFacing() const;
 
@@ -24,15 +24,21 @@ public:
   void resetAnimTimer();
   void resetRunTimer();
 
-  void move(sf::Vector2f movement, sf::Time dt);
-  void update(sf::Time dt);
+  void render(sf::RenderTarget& target);
+  void move(const sf::Vector2f& movement, sf::Time dt);
+  void update(const sf::Time& dt);
   void updateMovement(sf::Time dt);
   void updateAnimations();
   void updatePhysics();
   void animate();
-  void render(sf::RenderTarget& target);
   void jump();
-  void collide(bool floor);
+  void collide();
+
+private:
+  void initTexture();
+  void initSprite();
+  void initAnimations();
+  void initPhysics();
 
 private:
   sf::Sprite sprite;
@@ -51,19 +57,14 @@ private:
 
   // Physics
   sf::Vector2f velocity;
+  float velocity_y_max;
   float velocity_x_max;
   float velocity_min;
+
   float anim_speed_min;
   float acceleration;
   float drag;
   float gravity;
-  float velocity_y_max;
 
   bool is_airborne;
-
-  // Core
-  void initTexture();
-  void initSprite();
-  void initAnimations();
-  void initPhysics();
 };

@@ -1,6 +1,6 @@
 #include "../include/tilemap.hpp"
 
-TileMap::TileMap(const std::string& tilesheet, const int &tiles, const unsigned int width, const unsigned int height, const unsigned int tile_size) {
+TileMap::TileMap(std::string tilesheet, const int &tiles, const unsigned int width, const unsigned int height, const unsigned int tile_size) {
   initTexture(tilesheet);
   this->height = height;
   this->width = width;
@@ -8,7 +8,7 @@ TileMap::TileMap(const std::string& tilesheet, const int &tiles, const unsigned 
   this->tile_size = tile_size;
 }
 
-bool TileMap::initTexture(const std::string& path) {
+bool TileMap::initTexture(std::string& path) {
   // load the tileset texture
   if (!tileset.loadFromFile(path))
   {
@@ -60,7 +60,7 @@ bool TileMap::load()
   return true;
 }
 
-const sf::FloatRect TileMap::getTile(int pos) {
+sf::FloatRect TileMap::getTile(int pos) {
   sf::Vertex* quad = &vertices[(pos) * 4];
   sf::FloatRect tile = sf::FloatRect(quad[0].position.x * 3.0, quad[0].position.y * 3.0, 48, 48);
   return tile;
