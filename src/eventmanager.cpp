@@ -33,33 +33,33 @@ bool EventManager::removeBinding(std::string name) {
 }
 
 void EventManager::handleEvent(sf::Event& event) {
-  for (auto &b_itr : bindings) {
-    Binding* bind = b_itr.second;
-    for (auto &e_itr : bind->events) {
+  for (auto &[_, binding] : bindings) {
+    Binding* bind = binding;
+    for (auto &[e_type, e_info] : bind->events) {
       EventType sfml_event = (EventType) event.type;
-      if (e_itr.first != sfml_event) {
+      if (e_type != sfml_event) {
         continue;
       }
 
       if (sfml_event == EventType::KeyDown || sfml_event == EventType::KeyUp) {
-        if (e_itr.second.code == event.key.code) {
+        if (e_info.code == event.key.code) {
           // Matching event/keystroke
           // Increase count
           if (bind->details.keycode != -1) {
-            bind->details.keycode = e_itr.second.code;
+            bind->details.keycode = e_info.code;
           }
 
           ++(bind->c);
           break;
         }
       } else if (sfml_event == EventType::MButtonDown || sfml_event == EventType::MButtonUp) {
-        if (e_itr.second.code == event.mouseButton.button) {
+        if (e_info.code == event.mouseButton.button) {
           // Matching event/keystroke
           // Increase count
           bind->details.mouse.x = event.mouseButton.x;
           bind->details.mouse.y = event.mouseButton.y;
           if (bind->details.keycode != -1) {
-            bind->details.keycode = e_itr.second.code;
+            bind->details.keycode = e_info.code;
           }
 
           ++(bind->c);
@@ -89,26 +89,28 @@ void EventManager::update() {
 
   for (auto &b_itr : bindings) {
     Binding* bind = b_itr.second;
-    for (auto &e_itr : bind->events) {
-      switch (e_itr.first) {
+    for (auto &[e_type, e_info] : bind->events) {
+      switch (e_type) {
         case (EventType::Keyboard) :
-          if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(e_itr.second.code))) {
+          if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(e_info.code))) {
             if (bind->details.keycode != -1) {
-              bind->details.keycode = e_itr.second.code;
+              bind->details.keycode = e_info.code;
             }
             ++(bind->c);
           }
         break;
         case (EventType::Mouse) :
-          if (sf::Mouse::isButtonPressed(sf::Mouse::Button(e_itr.second.code))) {
+          if (sf::Mouse::isButtonPressed(sf::Mouse::Button(e_info.code))) {
             if (bind->details.keycode != -1) {
-              bind->details.keycode = e_itr.second.code;
+              bind->details.keycode = e_info.code;
             }
             ++(bind->c);
           }
         break;
         case (EventType::Joystick) :
           // expand
+        break;
+        default:
         break;
       }
     }
