@@ -40,7 +40,7 @@ void Window::destroy() {
   window.close();
 }
 
-void Window::update() {
+void Window::Update() {
   sf::Event event;
   while (window.pollEvent(event)) {
     if (event.type == sf::Event::LostFocus) {

@@ -11,23 +11,23 @@ public:
   Game();
   virtual ~Game();
 
-  Window* getWindow();
+  Window* GetWindow();
 
-  void update(sf::Time dt);
-  void processEvents();
-  void render();
-  void updateView();
-  void updateColision();
-  void renderPlayer();
-  void renderMap();
+  void Update(sf::Time dt);
+  void ProcessEvents();
+  void Render();
+  void UpdateView();
+  void UpdateCollision();
+  void RenderPlayer();
+  void RenderTileMap();
 
-  sf::Time restartClock();
+  sf::Time RestartClock();
 
 private:
-  void initWindow();
-  void initView();
-  void initPlayer();
-  void initMap();
+  void InitializeWindow();
+  void InitializeView();
+  void InitializePlayer();
+  void InitializeMap();
 
 private:
   Window window;

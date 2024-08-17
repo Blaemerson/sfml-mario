@@ -1,24 +1,24 @@
 #include "../include/textbox.hpp"
 
 Textbox::Textbox() {
-  setup(5, 9, 200, sf::Vector2f(0, 0));
+  Setup(5, 9, 200, sf::Vector2f(0, 0));
 }
 
 Textbox::Textbox(int visible, int charSize, int width, sf::Vector2f screenPos) {
-  setup(visible, charSize, width, screenPos);
+  Setup(visible, charSize, width, screenPos);
 }
 
 Textbox::~Textbox() {
   clear();
 }
 
-void Textbox::setup(int visible, int charSize, int width, sf::Vector2f screenPos) {
+void Textbox::Setup(int visible, int charSize, int width, sf::Vector2f screenPos) {
   numVisible = visible;
   this->screenPos = screenPos;
 
   sf::Vector2f offset(2.0f, 2.0f);
 
-  font.loadFromFile("Arial.TTF");
+  font.loadFromFile("../Arial.TTF");
   content.setFont(font);
   content.setString("");
   content.setCharacterSize(charSize);

@@ -6,10 +6,10 @@ class TileMap: public sf::Drawable, public sf::Transformable
 {
 public:
     TileMap(std::string tilesheet, const int &tiles, const unsigned int height, const unsigned int width, const unsigned int tileSize);
-    sf::FloatRect getTile(int pos);
+    sf::FloatRect GetTile(int pos);
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
-    bool load();
+    bool Load();
 
 private:
     bool initTexture(std::string& tilesheet) ;

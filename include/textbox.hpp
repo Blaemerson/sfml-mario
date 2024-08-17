@@ -9,7 +9,7 @@ public:
   Textbox(int visible, int charSize, int width, sf::Vector2f screenPos);
   ~Textbox();
 
-  void setup(int visible, int charSize, int width, sf::Vector2f screenPos);
+  void Setup(int visible, int charSize, int width, sf::Vector2f screenPos);
   void add(std::string message);
   void clear();
 

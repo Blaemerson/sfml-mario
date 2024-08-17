@@ -17,7 +17,7 @@ bool TileMap::initTexture(std::string& path) {
   return true;
 }
 
-bool TileMap::load()
+bool TileMap::Load()
 {
   // resize the vertex array to fit the level size
   vertices.setPrimitiveType(sf::Quads);
@@ -60,7 +60,7 @@ bool TileMap::load()
   return true;
 }
 
-sf::FloatRect TileMap::getTile(int pos) {
+sf::FloatRect TileMap::GetTile(int pos) {
   sf::Vertex* quad = &vertices[(pos) * 4];
   sf::FloatRect tile = sf::FloatRect(quad[0].position.x * 3.0, quad[0].position.y * 3.0, 48, 48);
   return tile;

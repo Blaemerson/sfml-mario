@@ -11,7 +11,7 @@ Player::Player() {
 
 Player::~Player() {}
 
-void Player::update(const sf::Time& dt) {
+void Player::Update(const sf::Time& dt) {
   updateMovement(dt);
   updateAnimations();
   updatePhysics();
@@ -22,7 +22,7 @@ void Player::render(sf::RenderTarget& target) {
 }
 
 void Player::initTexture() {
-  if (!tex_sheet.loadFromFile("textures/mario.png")) {
+  if (!tex_sheet.loadFromFile("../textures/mario.png")) {
     std::cout << "ERROR in Player.initTexture(): tex_sheet failed to load"
               << std::endl;
   }
@@ -78,7 +78,7 @@ void Player::updatePhysics() {
   sprite.move(velocity);
 }
 
-void Player::collide() {
+void Player::Collide() {
   is_airborne = true;
 }
 
@@ -247,28 +247,28 @@ void Player::resetRunTimer() {
   run_timer.restart();
 }
 
-const sf::Vector2f Player::getPosition() const {
+const sf::Vector2f Player::GetPosition() const {
   return sprite.getPosition();
 }
 
-void Player::setPosition(const float x, const float y) {
+void Player::SetPosition(const float x, const float y) {
   sprite.setPosition(x, y);
 }
 
 const sf::Vector2i Player::getCoords() const {
   return sf::Vector2i(
-      std::round(getPosition().x / 48),
-      std::round(((getPosition().y + (velocity.y <= 0.f ? 24 : 48)) / 48)));
+      std::round(GetPosition().x / 48),
+      std::round(((GetPosition().y + (velocity.y <= 0.f ? 24 : 48)) / 48)));
 }
 
-const sf::Vector2f Player::getVelocity() const {
+const sf::Vector2f Player::GetVelocity() const {
   return velocity;
 }
 
-const sf::FloatRect Player::getGlobalBounds() const {
+const sf::FloatRect Player::GetGlobalBounds() const {
   return sprite.getGlobalBounds();
 }
 
-void Player::resetVelocityY() { velocity.y = 0.f; }
+void Player::ResetVelocityY() { velocity.y = 0.f; }
 
-void Player::resetVelocityX() { velocity.x = 0.f; }
+void Player::ResetVelocityX() { velocity.x = 0.f; }

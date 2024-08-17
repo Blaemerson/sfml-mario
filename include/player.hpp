@@ -12,27 +12,27 @@ public:
   virtual ~Player();
 
   const bool& getAnimSwitch();
-  const sf::Vector2f getPosition() const;
+  const sf::Vector2f GetPosition() const;
   const sf::Vector2i getCoords() const;
-  const sf::Vector2f getVelocity() const;
-  const sf::FloatRect getGlobalBounds() const;
+  const sf::Vector2f GetVelocity() const;
+  const sf::FloatRect GetGlobalBounds() const;
   const Direction getFacing() const;
 
-  void setPosition(const float x, const float y);
-  void resetVelocityY();
-  void resetVelocityX();
+  void SetPosition(const float x, const float y);
+  void ResetVelocityY();
+  void ResetVelocityX();
   void resetAnimTimer();
   void resetRunTimer();
 
   void render(sf::RenderTarget& target);
   void move(const sf::Vector2f& movement, sf::Time dt);
-  void update(const sf::Time& dt);
+  void Update(const sf::Time& dt);
   void updateMovement(sf::Time dt);
   void updateAnimations();
   void updatePhysics();
   void animate();
   void jump();
-  void collide();
+  void Collide();
 
 private:
   void initTexture();

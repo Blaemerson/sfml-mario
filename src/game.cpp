@@ -7,12 +7,12 @@
 
 Game::Game()
 {
-  textbox.setup(5, 14, 350, sf::Vector2f(0, -10));
+  textbox.Setup(5, 14, 350, sf::Vector2f(0, -10));
 
   // initWindow();
-  initView();
-  initPlayer();
-  initMap();
+  InitializeView();
+  InitializePlayer();
+  InitializeMap();
 }
 
 Game::~Game()
@@ -21,62 +21,62 @@ Game::~Game()
   delete tilemap;
 }
 
-void Game::initView()
+void Game::InitializeView()
 {
-  view.setSize(window.getSize().x, window.getSize().y);
-  view.setCenter(window.getSize().x/2.f, window.getSize().y/2.f);
+  view.setSize(window.GetSize().x, window.GetSize().y);
+  view.setCenter(window.GetSize().x/2.f, window.GetSize().y/2.f);
 }
 
-Window* Game::getWindow()
+Window* Game::GetWindow()
 {
   return &window;
 }
 
-void Game::processEvents()
+void Game::ProcessEvents()
 {
-  window.update();
+  window.Update();
 }
 
 	/* bool space_held = false; */
-void Game::update(sf::Time dt)
+void Game::Update(sf::Time timeDelta)
 {
-  player->update(dt);
-  window.update();
-  updateView();
-  updateColision();
+  player->Update(timeDelta);
+  window.Update();
+  UpdateView();
+  UpdateCollision();
 }
 
 /*************************************/
 /*               TIME                */
 /*************************************/
 
-sf::Time Game::restartClock()
+sf::Time Game::RestartClock()
 {
   return clock.restart();
 }
 
-void Game::render()
+void Game::Render()
 {
 
   window.beginDraw();
   window.setView(view);
 
   // Draw game objects
-  renderMap();
-  renderPlayer();
+  RenderTileMap();
+  RenderPlayer();
 
   textbox.add("Player facing = " + std::to_string(player->getFacing()));
-  textbox.add("Player real x = " + std::to_string(player->getPosition().x) + " real y = " + std::to_string(player->getPosition().y));
-  textbox.add("Player vel x = " + std::to_string(player->getVelocity().x));
-  textbox.add("Player vel y = " + std::to_string(player->getVelocity().y));
-  textbox.render(*window.getTarget());
-  textbox.setScreenPos(sf::Vector2f(view.getCenter().x - (window.getSize().x / 2.f), 0));
+  textbox.add("Player real x = " + std::to_string(player->GetPosition().x) + " real y = " + std::to_string(player->GetPosition().y));
+  textbox.add("Player vel x = " + std::to_string(player->GetVelocity().x));
+  textbox.add("Player vel y = " + std::to_string(player->GetVelocity().y));
+  textbox.render(*window.GetTarget());
+  textbox.setScreenPos(sf::Vector2f(view.getCenter().x - (window.GetSize().x / 2.f), 0));
 
   window.endDraw();
 }
 
 
-void Game::updateView()
+void Game::UpdateView()
 {
   const float diff = 2.5;
   const unsigned int scroll_begin = 48 * diff * 4;
@@ -84,21 +84,21 @@ void Game::updateView()
   const unsigned int scroll_end = 48 * (LEVEL_1_WIDTH - (diff * 4));
   const unsigned int level_edge_right = 48 * (LEVEL_1_WIDTH - (diff * 4));
 
-  if (player->getPosition().x < scroll_begin) {
-    view.setCenter(level_edge_left, window.getSize().y / 2.f);
-  } else if (player->getPosition().x > scroll_end) {
-    view.setCenter(level_edge_right, window.getSize().y / 2.f);
+  if (player->GetPosition().x < scroll_begin) {
+    view.setCenter(level_edge_left, window.GetSize().y / 2.f);
+  } else if (player->GetPosition().x > scroll_end) {
+    view.setCenter(level_edge_right, window.GetSize().y / 2.f);
   } else {
-    view.setCenter(player->getPosition().x, window.getSize().y / 2.f);
+    view.setCenter(player->GetPosition().x, window.GetSize().y / 2.f);
   }
 }
 
-void Game::updateColision()
+void Game::UpdateCollision()
 {
-  if (player->getPosition().y + player->getGlobalBounds().height > window.getSize().y)
+  if (player->GetPosition().y + player->GetGlobalBounds().height > window.GetSize().y)
   {
-    player->resetVelocityY();
-    player->setPosition(player->getPosition().x, window.getSize().y - player->getGlobalBounds().height);
+    player->ResetVelocityY();
+    player->SetPosition(player->GetPosition().x, window.GetSize().y - player->GetGlobalBounds().height);
 
     return;
   }
@@ -115,23 +115,23 @@ void Game::updateColision()
 
   if (down_idx > -1 && down_idx < max_tiles) {
     if (LEVEL_1[down_idx] == 1) {
-      const sf::FloatRect tile_down = tilemap->getTile(down_idx);
-      if (tile_down.intersects(player->getGlobalBounds())) {
-        player->resetVelocityY();
-        player->setPosition(player->getPosition().x, tile_down.top - 48);
-        player->collide();
+      const sf::FloatRect tile_down = tilemap->GetTile(down_idx);
+      if (tile_down.intersects(player->GetGlobalBounds())) {
+        player->ResetVelocityY();
+        player->SetPosition(player->GetPosition().x, tile_down.top - 48);
+        player->Collide();
       }
     }
   }
 
   if (up_idx > -1 && up_idx < max_tiles) {
     if (LEVEL_1[up_idx] == 1) {
-      if (player->getVelocity().y < 0.f) {
-        const sf::FloatRect tile_up = tilemap->getTile(up_idx);
-        if (tile_up.intersects(player->getGlobalBounds())) {
-          player->setPosition(player->getPosition().x, tile_up.top + 48);
-          player->resetVelocityY();
-          player->collide();
+      if (player->GetVelocity().y < 0.f) {
+        const sf::FloatRect tile_up = tilemap->GetTile(up_idx);
+        if (tile_up.intersects(player->GetGlobalBounds())) {
+          player->SetPosition(player->GetPosition().x, tile_up.top + 48);
+          player->ResetVelocityY();
+          player->Collide();
         }
       }
     }
@@ -139,69 +139,70 @@ void Game::updateColision()
 
   if (player_idx > -1 && player_idx < max_tiles) {
      if( LEVEL_1[player_idx] == 1) {
-      const sf::FloatRect tile_player = tilemap->getTile(player_idx);
-      if (tile_player.intersects(player->getGlobalBounds())) {
-        player->setPosition(player->getPosition().x, tile_player.top + (player->getVelocity().y < 0 ? 48 : -48));
-        player->resetVelocityY();
-        player->collide();
+      const sf::FloatRect tile_player = tilemap->GetTile(player_idx);
+      if (tile_player.intersects(player->GetGlobalBounds())) {
+        player->SetPosition(player->GetPosition().x, tile_player.top + (player->GetVelocity().y < 0 ? 48 : -48));
+        player->ResetVelocityY();
+        player->Collide();
       }
     }
   }
 
   if (left_idx > -1 && left_idx < max_tiles) {
     if (LEVEL_1[left_idx] == 1) {
-      const sf::FloatRect tile_left = tilemap->getTile(left_idx);
-      if (tile_left.intersects(player->getGlobalBounds())) {
-        if (player->getVelocity().x < 0) {
-          player->resetVelocityX();
+      const sf::FloatRect tile_left = tilemap->GetTile(left_idx);
+      if (tile_left.intersects(player->GetGlobalBounds())) {
+        if (player->GetVelocity().x < 0) {
+          player->ResetVelocityX();
         }
-        player->setPosition(tile_left.left + 48, player->getPosition().y);
-        player->collide();
+        player->SetPosition(tile_left.left + 48, player->GetPosition().y);
+        player->Collide();
       }
     }
   }
 
   if (right_idx > -1 && right_idx < max_tiles) {
     if (LEVEL_1[right_idx] == 1) {
-      const sf::FloatRect tile_right = tilemap->getTile(right_idx);
-      if (tile_right.intersects(player->getGlobalBounds())) {
-        if (player->getVelocity().x > 0 ) {
-          player->resetVelocityX();
+      const sf::FloatRect tile_right = tilemap->GetTile(right_idx);
+      if (tile_right.intersects(player->GetGlobalBounds())) {
+        if (player->GetVelocity().x > 0 ) {
+          player->ResetVelocityX();
         }
-        player->setPosition(tile_right.left - 48, player->getPosition().y);
-        player->collide();
+        player->SetPosition(tile_right.left - 48, player->GetPosition().y);
+        player->Collide();
       }
     }
   }
 
 }
 
-void Game::renderPlayer()
+void Game::RenderPlayer()
 {
-  player->render(*window.getTarget());
+  player->render(*window.GetTarget());
 }
 
-void Game::renderMap()
+void Game::RenderTileMap()
 {
   sf::RenderStates states;
-  tilemap->draw(*window.getTarget(), states);
+  tilemap->draw(*window.GetTarget(), states);
 }
 
 
-void Game::initWindow() {
+void Game::InitializeWindow() {
   // window.create(sf::VideoMode(16 * 60, 16 * 50), "MyGame", sf::Style::Close | sf::Style::Titlebar);
 }
 
-void Game::initPlayer()
+void Game::InitializePlayer()
 {
   player = new Player();
 }
 
-void Game::initMap()
+void Game::InitializeMap()
 {
-  tilemap = new TileMap("textures/tilesheet.png", *LEVEL_1, LEVEL_1_WIDTH, LEVEL_1_HEIGHT, 16);
-  if (!tilemap->load()) {
-        std::cout << "notloaded tilesheet" << std::endl;
-        return;
-    }
+  tilemap = new TileMap("../textures/tilesheet.png", *LEVEL_1, LEVEL_1_WIDTH, LEVEL_1_HEIGHT, 16);
+  if(!tilemap->Load())
+  {
+    std::cout << "notloaded tilesheet" << std::endl;
+    return;
+  }
 }

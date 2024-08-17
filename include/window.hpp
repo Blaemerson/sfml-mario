@@ -12,7 +12,7 @@ public:
   void beginDraw();
   void endDraw();
 
-  void update();
+  void Update();
 
   bool isDone();
   bool isFullscreen();
@@ -22,11 +22,11 @@ public:
   void draw(sf::Drawable& drawable);
   void draw(sf::VertexArray vertices, sf::RenderStates states);
 
-  sf::Vector2u getSize() {
+  sf::Vector2u GetSize() {
     return size;
   }
 
-  sf::RenderWindow* getTarget() {
+  sf::RenderWindow* GetTarget() {
     return &window;
   }
 
